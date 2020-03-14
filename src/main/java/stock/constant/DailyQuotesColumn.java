@@ -18,18 +18,18 @@ public enum DailyQuotesColumn {
 	LAST_BEST_ASK_VOLUME("最後揭示賣量"),
 	PRICE_EARNING_RATIO("本益比");
 
-	private String chinese;
+	private String zhTitle;
 
-	private DailyQuotesColumn(String chinese) {
-		this.setChinese(chinese);
+	private DailyQuotesColumn(String zhTitle) {
+		setZhTitle(zhTitle);
 	}
 
-	public static DailyQuotesColumn get(String value) {
+	public static DailyQuotesColumn getByZhTitle(String value) {
 		if (value != null) {
 			String realValue = value.trim();
 			if (!realValue.isEmpty()) {
 				for (DailyQuotesColumn key : values()) {
-					if (key.getChinese().equals(realValue)) {
+					if (key.getZhTitle().equals(realValue)) {
 						return key;
 					}
 				}
@@ -38,12 +38,12 @@ public enum DailyQuotesColumn {
 		return null;
 	}
 
-	public String getChinese() {
-		return chinese;
+	public String getZhTitle() {
+		return zhTitle;
 	}
 
-	private void setChinese(String chinese) {
-		this.chinese = chinese;
+	private void setZhTitle(String zhTitle) {
+		this.zhTitle = zhTitle;
 	}
 
 }

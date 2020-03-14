@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package stock.parse.html;
+package parse.html.securities;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -11,27 +11,32 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
-import org.jsoup.Jsoup;
+import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import stock.constant.DailyQuotesColumn;
+import utils.parse.html.ParseHtmlUtils;
 
-public class ParseHtmlDailyQuotesStockExchange {
-	private static final String URL = "https://www.twse.com.tw/exchangeReport/MI_INDEX?response=html&type=ALLBUT0999";
+public class DailyQuotesParser {
+	private static Logger logger = Logger.getLogger(DailyQuotesParser.class);
+	private static final String URL = "https://www.twse.com.tw/exchangeReport/MI_INDEX?response=html&type=ALLBUT0999&date=";
 
-	public static List<Map<DailyQuotesColumn, String>> praseHTMLTable(String date) {
-		/* Need jsoup.jar from http://jsoup.org/ */
-		String url = URL + "&date=" + date;
-		System.out.println("每日收盤行情(" + date + ")url:" + url);
+	private DailyQuotesParser() {
+
+	}
+
+	public static List<Map<DailyQuotesColumn, String>> parse(String date) {
+		List<Map<DailyQuotesColumn, String>> stockTradeDataList = new ArrayList<>();
+
+		String url = URL + date;
+		logger.debug(String.format("%s Daily Quotes(All(no Warrant & CBBC & OCBBC))", date));
+		logger.debug(String.format("URL: %s", url));
 		try {
-			String[] ua = UserAgent.ua;
-			Random random = new Random();
-			Document doc = Jsoup.connect(url).timeout(10 * 1000).validateTLSCertificates(false)
-					.userAgent(ua[random.nextInt(ua.length)]).maxBodySize(0).get();
+			/* Need jsoup.jar from http://jsoup.org/ */
+			Document doc = ParseHtmlUtils.getDocument(url);
 
 			Elements tableElements = doc.getElementsByTag("table");
 			Element targetTableElement = null;
@@ -48,15 +53,12 @@ public class ParseHtmlDailyQuotesStockExchange {
 				Map<Integer, DailyQuotesColumn> titleOrderMap = new HashMap<>();
 				putTitleOrder2Map(titleOrderMap, targetTableElement);
 
-				List<Map<DailyQuotesColumn, String>> stockTradeDataList = new ArrayList<>();
 				addStockData2List(stockTradeDataList, titleOrderMap, targetTableElement);
-
-				return stockTradeDataList;
 			}
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
-		return null;
+		return stockTradeDataList;
 	}
 
 	private static void addStockData2List(List<Map<DailyQuotesColumn, String>> stockTradeDataList,
@@ -77,7 +79,7 @@ public class ParseHtmlDailyQuotesStockExchange {
 		for (Element theadElement : targetTableElement.getElementsByTag("thead")) {
 			for (Element trElement : theadElement.getElementsByTag("tr")) {
 				for (Element tdElement : trElement.getElementsByTag("td")) {
-					DailyQuotesColumn dailyClostingMarketDataType = DailyQuotesColumn.get(tdElement.text());
+					DailyQuotesColumn dailyClostingMarketDataType = DailyQuotesColumn.getByZhTitle(tdElement.text());
 					if (dailyClostingMarketDataType != null) {
 						titleOrderMap.put(tdElement.elementSiblingIndex(), dailyClostingMarketDataType);
 					}

@@ -1,4 +1,4 @@
-package com.kusoduck.stock.dao;
+package stock.dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

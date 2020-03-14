@@ -5,9 +5,12 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-public class CommonDao {
+import org.apache.log4j.Logger;
 
-	private CommonDao() {
+public class CommonDAO {
+	private static Logger logger = Logger.getLogger(CommonDAO.class);
+
+	private CommonDAO() {
 
 	}
 
@@ -35,93 +38,60 @@ public class CommonDao {
 		try (PreparedStatement ps = conn.prepareStatement(insertSQL.toString())) {
 			for (DbTableDataBean bean : cols) {
 				i++;
-				switch (bean.dataType) {
-				case STRING:
-					ps.setString(i, bean.columnValue);
-					break;
-				case LONG:
-					ps.setLong(i, Long.parseLong(bean.columnValue));
-					break;
-				case INT:
-					ps.setInt(i, Integer.parseInt(bean.columnValue));
-					break;
-				case FLOAT:
-					ps.setFloat(i, Float.parseFloat(bean.columnValue));
-					break;
-				default:
-					break;
-				}
+				ps.setString(i, bean.columnValue);
 			}
 			return ps.executeUpdate();
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			System.out.println(insertSQL);
+			logger.error(e.getMessage());
 			for (DbTableDataBean bean : cols) {
-				System.out.println(bean.getColumnName() + " : " + bean.getColumnValue());
+				logger.debug(String.format("%s:%s", bean.getColumnName(), bean.getColumnValue()));
 			}
 			return 0;
 		}
 	}
 
 	public static int update(Connection conn, String tableName, List<DbTableDataBean> cols,
-			List<DbTableDataBean> condition) throws SQLException {
+			List<DbTableDataBean> condition) {
+		int updateCount = 0;
+		boolean isFirst = true;
 		StringBuilder updateSQL = new StringBuilder();
+
 		updateSQL.append("UPDATE ").append(tableName).append(" SET ");
-		int colsSize = cols.size();
-		int i = 0;
 		for (DbTableDataBean colBean : cols) {
-			updateSQL.append(colBean.columnName).append("=").append("?");
-			i++;
-			if (i < colsSize) {
+			if (isFirst) {
+				isFirst = false;
+			} else {
 				updateSQL.append(",");
 			}
-		}
-		int conditionSize = condition.size();
-		i = 0;
-		updateSQL.append(" WHERE ");
-		for (DbTableDataBean conditionBean : condition) {
-			updateSQL.append(conditionBean.getColumnName()).append("=").append("?");
-			i++;
-			if (i < conditionSize) {
-				updateSQL.append(" AND ");
-			}
+			updateSQL.append(colBean.columnName).append("=").append("?");
 		}
 
-		i = 0;
+		updateSQL.append(" WHERE ");
+		isFirst = true;
+		for (DbTableDataBean conditionBean : condition) {
+			if (isFirst) {
+				isFirst = false;
+			} else {
+				updateSQL.append(" AND ");
+			}
+			updateSQL.append(conditionBean.getColumnName()).append("=").append("?");
+		}
+
 		try (PreparedStatement ps = conn.prepareStatement(updateSQL.toString())) {
+			int i = 1;
 			for (DbTableDataBean colBean : cols) {
-				i++;
-				switch (colBean.dataType) {
-				case STRING:
-					ps.setString(i, colBean.columnValue);
-					break;
-				case LONG:
-					ps.setLong(i, Long.parseLong(colBean.columnValue));
-					break;
-				case INT:
-					ps.setInt(i, Integer.parseInt(colBean.columnValue));
-					break;
-				default:
-					break;
-				}
+				ps.setString(i++, colBean.columnValue);
 			}
 			for (DbTableDataBean conditionBean : condition) {
-				i++;
-				switch (conditionBean.dataType) {
-				case STRING:
-					ps.setString(i, conditionBean.columnValue);
-					break;
-				case LONG:
-					ps.setLong(i, Long.parseLong(conditionBean.columnValue));
-					break;
-				case INT:
-					ps.setInt(i, Integer.parseInt(conditionBean.columnValue));
-					break;
-				default:
-					break;
-				}
+				ps.setString(i++, conditionBean.columnValue);
 			}
-			return ps.executeUpdate();
+			updateCount = ps.executeUpdate();
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+			for (DbTableDataBean bean : cols) {
+				logger.debug(String.format("%s:%s", bean.getColumnName(), bean.getColumnValue()));
+			}
 		}
+		return updateCount;
 	}
 }
