@@ -31,8 +31,8 @@ import com.kusoduck.stock.dao.StockInfoDAO;
 import com.kusoduck.stock.dao.StockRatioDAO;
 import com.kusoduck.utils.MysqlConn;
 
-public class SecurityWebCrawler {
-	private static Logger logger = Logger.getLogger(SecurityWebCrawler.class);
+public class SecuritiesWebCrawler {
+	private static Logger logger = Logger.getLogger(SecuritiesWebCrawler.class);
 
 	public static void main(String[] args) {
 		/* change to vm argument -Dlog4j.configuration=file:__file_path__ */
