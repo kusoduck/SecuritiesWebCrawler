@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.kusoduck.securities.info.getter;
+package com.kusoduck.securities;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -31,8 +31,8 @@ import com.kusoduck.stock.dao.StockInfoDAO;
 import com.kusoduck.stock.dao.StockRatioDAO;
 import com.kusoduck.utils.MysqlConn;
 
-public class GetStockData {
-	private static Logger logger = Logger.getLogger(GetStockData.class);
+public class SecurityWebCrawler {
+	private static Logger logger = Logger.getLogger(SecurityWebCrawler.class);
 
 	public static void main(String[] args) {
 		/* change to vm argument -Dlog4j.configuration=file:__file_path__ */
