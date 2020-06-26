@@ -30,8 +30,8 @@ public class DailyQuotesParser {
 
 	public static List<Map<DailyQuotesColumn, String>> parse(String date) {
 		String url = URL + date;
-		logger.debug(String.format("%s Daily Quotes(All(no Warrant & CBBC & OCBBC))", date));
-		logger.debug(String.format("URL: %s", url));
+		logger.info(String.format("%s Daily Quotes(All(no Warrant & CBBC & OCBBC))", date));
+		logger.info(String.format("Parsing HTML: %s", url));
 		try {
 			/* Need jsoup.jar from http://jsoup.org/ */
 			Document doc = ParseHtmlUtils.getDocument(url);
@@ -61,8 +61,8 @@ public class DailyQuotesParser {
 		return new ArrayList<>();
 	}
 
-	private static void addStockData2List(List<Map<DailyQuotesColumn, String>> stockTradeDataList,
-			Map<Integer, DailyQuotesColumn> titleOrderMap, Element targetTableElement) {
+	private static void addStockData2List(List<Map<DailyQuotesColumn, String>> stockTradeDataList, Map<Integer, DailyQuotesColumn> titleOrderMap,
+			Element targetTableElement) {
 		for (Element tbodyElement : targetTableElement.getElementsByTag("tbody")) {
 			for (Element trElement : tbodyElement.getElementsByTag("tr")) {
 				Map<DailyQuotesColumn, String> stockTradeDataMap = new EnumMap<>(DailyQuotesColumn.class);

@@ -17,7 +17,7 @@ import com.kusoduck.stock.constant.StockRatiosColumn;
 public class StockRatioDAO {
 	private static Logger logger = Logger.getLogger(StockRatioDAO.class);
 
-	private static final String TABLE = "stock_ratio";
+	private static final String TABLE = "t_stock_ratio";
 
 	private StockRatioDAO() {
 
@@ -26,7 +26,7 @@ public class StockRatioDAO {
 	public static void create(Connection conn, String date, List<Map<StockRatiosColumn, String>> stockRatios) {
 		for (Map<StockRatiosColumn, String> stockRatiosMap : stockRatios) {
 			List<DbTableDataBean> dataBean = new ArrayList<>();
-			dataBean.add(new DbTableDataBean("date", date));
+			dataBean.add(new DbTableDataBean("TRADE_DATE", date));
 			for (Entry<StockRatiosColumn, String> stockRatiosEntry : stockRatiosMap.entrySet()) {
 				String value = stockRatiosEntry.getValue().replace(",", "");
 				StockRatiosColumn ratiosOfSecuritiesColumn = stockRatiosEntry.getKey();

@@ -16,7 +16,7 @@ import com.kusoduck.stock.constant.DailyQuotesColumn;
 
 public class DailyQuotesDAO {
 	private static Logger logger = Logger.getLogger(DailyQuotesDAO.class);
-	private static final String TABLE = "daily_quotes";
+	private static final String TABLE = "t_daily_quotes";
 
 	private DailyQuotesDAO() {
 
@@ -25,7 +25,7 @@ public class DailyQuotesDAO {
 	public static void create(Connection conn, String date, List<Map<DailyQuotesColumn, String>> dailyQuotes) {
 		for (Map<DailyQuotesColumn, String> stockDailyQuotesMap : dailyQuotes) {
 			List<DbTableDataBean> dataBean = new ArrayList<>();
-			dataBean.add(new DbTableDataBean("date", date));
+			dataBean.add(new DbTableDataBean("TRADE_DATE", date));
 			for (Entry<DailyQuotesColumn, String> stockDailyQuotesEntry : stockDailyQuotesMap.entrySet()) {
 				String value = stockDailyQuotesEntry.getValue().replace(",", "");
 				DailyQuotesColumn dailyQuotesColumn = stockDailyQuotesEntry.getKey();

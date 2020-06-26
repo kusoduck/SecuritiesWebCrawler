@@ -17,6 +17,7 @@ import java.util.Scanner;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 
 import com.kusoduck.securities.html.parser.DailyQuotesParser;
 import com.kusoduck.securities.html.parser.InvestorsDailyTradingParser;
@@ -29,14 +30,14 @@ import com.kusoduck.stock.dao.DailyQuotesDAO;
 import com.kusoduck.stock.dao.InvestorsDailyTradingDAO;
 import com.kusoduck.stock.dao.StockInfoDAO;
 import com.kusoduck.stock.dao.StockRatioDAO;
-import com.kusoduck.utils.MysqlConn;
+import com.kusoduck.utils.MySQLConnector;
 
 public class SecuritiesWebCrawler {
 	private static Logger logger = Logger.getLogger(SecuritiesWebCrawler.class);
 
 	public static void main(String[] args) {
 		/* change to vm argument -Dlog4j.configuration=file:__file_path__ */
-		// PropertyConfigurator.configure("C:/Users/kusoduck/git/GetStockDataFromHtml/src/log4j.properties");
+		PropertyConfigurator.configure("C:/Users/kusoduck/git/SecuritiesWebCrawler/src/log4j.properties");
 		String startDate = "";
 		logger.info("(1.)匯入今日資料");
 		logger.info("(2.)從指定日期開始");
@@ -53,7 +54,7 @@ public class SecuritiesWebCrawler {
 			}
 		}
 
-		MysqlConn connecter = new MysqlConn();
+		MySQLConnector connecter = new MySQLConnector();
 		try (Connection conn = connecter.getConn()) {
 
 			if (CollectionUtils.isEmpty(StockInfoDAO.select(conn))) {

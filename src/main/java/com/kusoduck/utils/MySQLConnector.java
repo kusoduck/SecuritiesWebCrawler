@@ -9,10 +9,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class MysqlConn {
+public class MySQLConnector {
 	private Connection conn;
 
-	public MysqlConn() {
+	public MySQLConnector() {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
 			String username = getEncryptedUser();

@@ -17,12 +17,12 @@ import com.kusoduck.stock.constant.InvestorsDailyTradingColumn;
 public class InvestorsDailyTradingDAO {
 	private static Logger logger = Logger.getLogger(InvestorsDailyTradingDAO.class);
 
-	private static final String TABLE = "investors_daily_trading";
+	private static final String TABLE = "t_investors_daily_trading";
 
 	public static void create(Connection conn, String date, List<Map<InvestorsDailyTradingColumn, String>> investorsDailyTradings) {
 		for (Map<InvestorsDailyTradingColumn, String> investorsDailyTradingMap : investorsDailyTradings) {
 			List<DbTableDataBean> dataBean = new ArrayList<>();
-			dataBean.add(new DbTableDataBean("date", date));
+			dataBean.add(new DbTableDataBean("TRADE_DATE", date));
 			for (Entry<InvestorsDailyTradingColumn, String> investorsDailyTradingEntry : investorsDailyTradingMap.entrySet()) {
 				String value = investorsDailyTradingEntry.getValue().replace(",", "");
 				InvestorsDailyTradingColumn investorsDailyTradingColumn = investorsDailyTradingEntry.getKey();

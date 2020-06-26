@@ -30,8 +30,8 @@ public class InvestorsDailyTradingParser {
 
 	public static List<Map<InvestorsDailyTradingColumn, String>> parse(String date) {
 		String url = URL + date;
-		logger.debug(String.format("%s Daily Trading Details of Foreign and Other Investors", date));
-		logger.debug(String.format("URL: %s", url));
+		logger.info(String.format("%s Daily Trading Details of Foreign and Other Investors", date));
+		logger.info(String.format("Parsing HTML: %s", url));
 		try {
 			// Need jsoup.jar from http://jsoup.org/
 			Document doc = ParseHtmlUtils.getDocument(url);

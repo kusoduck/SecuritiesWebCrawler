@@ -30,8 +30,8 @@ public class StockRatiosParser {
 
 	public static List<Map<StockRatiosColumn, String>> parse(String date) {
 		String url = URL + date;
-		logger.debug(String.format("%s Daily Quotes(All(no Warrant & CBBC & OCBBC))", date));
-		logger.debug(String.format("URL: %s", url));
+		logger.info(String.format("%s Stock P/E ratio, dividend yield and P/B ratio", date));
+		logger.info(String.format("Parsing HTML: %s", url));
 		try {
 			/* Need jsoup.jar from http://jsoup.org/ */
 			Document doc = ParseHtmlUtils.getDocument(url);
