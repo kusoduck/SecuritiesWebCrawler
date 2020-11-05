@@ -1,4 +1,4 @@
-package com.kusoduck.securities.html.parser;
+package com.kusoduck.utils;
 
 public class UserAgent {
 	public static final String[] UA = { "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:46.0) Gecko/20100101 Firefox/46.0",
