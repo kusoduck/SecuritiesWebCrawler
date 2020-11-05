@@ -17,6 +17,29 @@
 	<build>
 		<plugins>
 			<plugin>
+				<!-- org.apache.maven.plugins:maven-dependency-plugin:3.1.2:build-classpath -->
+				<!-- <groupId>org.apache.maven.plugins</groupId> -->
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>3.1.2</version>
+				<executions>
+					<execution>
+						<id>build-classpath-windows</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>build-classpath</goal>
+						</goals>
+						<configuration>
+							<prefix>lib</prefix>
+							<includeScope>runtime</includeScope>
+							<includeTypes>jar</includeTypes>
+							<outputProperty>dependency.cp.windows</outputProperty>
+							<fileSeparator>\</fileSeparator>
+							<pathSeparator>;</pathSeparator>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.6.1</version>
@@ -25,21 +48,9 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<!-- 依據descriptor包裝檔案 -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>build-classpath-windows</id>
-						<phase>generate-resources</phase>
-						<configuration>
-							<prefix>${app.lib.dir.windows}</prefix>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
+				<!-- <groupId>org.apache.maven.plugins</groupId> -->
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.3.0</version>
 				<executions>
