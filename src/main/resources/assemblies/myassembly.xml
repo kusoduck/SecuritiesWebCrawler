@@ -9,12 +9,21 @@
 	<fileSets>
 		<fileSet>
 			<!-- all scripts applicable for platform -->
-			<directory>${project.basedir}</directory>
+			<directory>${project.basedir}/src</directory>
 			<outputDirectory></outputDirectory>
 			<lineEnding>dos</lineEnding>
 			<includes>
 				<include>**/*.bat</include>
-				<include>src/**/*.properties</include>
+			</includes>
+			<filtered>true</filtered>
+		</fileSet>
+		<fileSet>
+			<!-- all properties -->
+			<directory>${project.basedir}/src</directory>
+			<outputDirectory>src</outputDirectory>
+			<lineEnding>dos</lineEnding>
+			<includes>
+				<include>**/*.properties</include>
 			</includes>
 			<filtered>true</filtered>
 		</fileSet>
