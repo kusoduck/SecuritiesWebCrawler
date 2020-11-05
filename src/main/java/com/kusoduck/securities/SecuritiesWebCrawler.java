@@ -37,7 +37,9 @@ public class SecuritiesWebCrawler {
 
 	public static void main(String[] args) {
 		/* change to vm argument -Dlog4j.configuration=file:__file_path__ */
-		PropertyConfigurator.configure("C:/Users/kusoduck/git/SecuritiesWebCrawler/src/log4j.properties");
+		String log4jPath = System.getProperty("log4j.configuration", "C:/Users/kusoduck/git/SecuritiesWebCrawler/src/log4j.properties");
+		PropertyConfigurator.configure(log4jPath);
+		
 		String startDate = "";
 		logger.info("(1.)匯入今日資料");
 		logger.info("(2.)從指定日期開始");

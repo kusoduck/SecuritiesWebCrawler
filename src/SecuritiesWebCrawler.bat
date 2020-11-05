@@ -20,8 +20,9 @@ rem *********************************
 rem run class, command line options
 rem *********************************
 
+set JAVA_ARGS= -Xmx1024m -Dlog4j.configuration=/src/log4j.properties
 
-"%JAVA_HOME%"\bin\java.exe -cp %CP% com.kusoduck.securities.SecuritiesWebCrawler
+"%JAVA_HOME%"\bin\java.exe -cp %CP% %JAVA_ARGS% com.kusoduck.securities.SecuritiesWebCrawler
 
 goto done
 
