@@ -36,23 +36,28 @@ public class SecuritiesWebCrawler {
 	private static Logger logger = Logger.getLogger(SecuritiesWebCrawler.class);
 
 	public static void main(String[] args) {
-		/* change to vm argument -Dlog4j.configuration=file:__file_path__ */
-		String log4jPath = System.getProperty("log4j.configuration", "C:/Users/kusoduck/git/SecuritiesWebCrawler/src/log4j.properties");
+		String log4jPath = System.getProperty("log4j.config", "src/log4j.properties");
 		PropertyConfigurator.configure(log4jPath);
-		
+
+		boolean isAuto = Boolean.parseBoolean(System.getProperty("auto", "true"));
+
 		String startDate = "";
 		logger.info("(1.)匯入今日資料");
 		logger.info("(2.)從指定日期開始");
 		logger.info("(3.)從201801開始");
 		String option;
-		try (Scanner scanner = new Scanner(System.in)) {
-			option = scanner.nextLine();
+		if (isAuto) {
+			option = "1";
+		} else {
+			try (Scanner scanner = new Scanner(System.in)) {
+				option = scanner.nextLine();
 
-			if (option.compareToIgnoreCase("2") == 0) {
-				logger.info("輸入年月日(YYYYMMDD)");
-				startDate = scanner.nextLine();
-			} else if (option.compareToIgnoreCase("3") == 0) {
-				startDate = "20180101";
+				if (option.compareToIgnoreCase("2") == 0) {
+					logger.info("輸入年月日(YYYYMMDD)");
+					startDate = scanner.nextLine();
+				} else if (option.compareToIgnoreCase("3") == 0) {
+					startDate = "20180101";
+				}
 			}
 		}
 
@@ -111,7 +116,8 @@ public class SecuritiesWebCrawler {
 			logger.info(String.format("Stock Ratio No data(%s)", date));
 		}
 
-		List<Map<InvestorsDailyTradingColumn, String>> investorsDailyTradings = InvestorsDailyTradingParser.parse(date);
+		List<Map<InvestorsDailyTradingColumn, String>> investorsDailyTradings = InvestorsDailyTradingParser
+				.parse(date);
 		if (CollectionUtils.isNotEmpty(investorsDailyTradings)) {
 			InvestorsDailyTradingDAO.create(conn, date, investorsDailyTradings);
 		} else {

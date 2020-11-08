@@ -1,7 +1,7 @@
 @echo off
 rem Batch file(based on SM-14) to install Windows service with LineWorks Service Manager
 rem =====================================================================================
-echo Start Report Template Migration Processor
+echo Start Securities Web Crawler
 
 if "%JAVA_HOME%" == "" goto nojavahome
 
@@ -20,7 +20,7 @@ rem *********************************
 rem run class, command line options
 rem *********************************
 
-set JAVA_ARGS= -Xmx1024m -Dlog4j.configuration=/src/log4j.properties
+set JAVA_ARGS= -Xmx1024m -Dauto=true -Dlog4j.config=properties/log4j.properties
 
 "%JAVA_HOME%"\bin\java.exe -cp %CP% %JAVA_ARGS% com.kusoduck.securities.SecuritiesWebCrawler
 

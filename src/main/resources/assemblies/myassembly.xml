@@ -1,7 +1,7 @@
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
-	<id>demo</id>
+	<id>Windows</id>
 	<formats>
 		<format>zip</format>
 	</formats>
@@ -9,7 +9,7 @@
 	<fileSets>
 		<fileSet>
 			<!-- all scripts applicable for platform -->
-			<directory>${project.basedir}/src</directory>
+			<directory>${project.basedir}/src/main/resources</directory>
 			<outputDirectory></outputDirectory>
 			<lineEnding>dos</lineEnding>
 			<includes>
@@ -19,8 +19,8 @@
 		</fileSet>
 		<fileSet>
 			<!-- all properties -->
-			<directory>${project.basedir}/src</directory>
-			<outputDirectory>src</outputDirectory>
+			<directory>${project.basedir}/src/main/resources</directory>
+			<outputDirectory></outputDirectory>
 			<lineEnding>dos</lineEnding>
 			<includes>
 				<include>**/*.properties</include>
