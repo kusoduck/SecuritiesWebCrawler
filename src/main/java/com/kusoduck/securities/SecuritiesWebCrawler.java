@@ -61,8 +61,7 @@ public class SecuritiesWebCrawler {
 			}
 		}
 
-		MySQLConnector connecter = new MySQLConnector();
-		try (Connection conn = connecter.getConn()) {
+		try (Connection conn = MySQLConnector.getConn("securities")) {
 
 			if (CollectionUtils.isEmpty(StockInfoDAO.select(conn))) {
 				StockInfoParser.parse(conn);

@@ -5,36 +5,50 @@
  */
 package com.kusoduck.utils;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
 public class MySQLConnector {
-	private Connection conn;
+	private static Logger logger = Logger.getLogger(MySQLConnector.class);
+	private static String propFileName = System.getProperty("prop.database");
+	private static Properties prop = new Properties();
+	private static Connection conn;
 
-	public MySQLConnector() {
+	static {
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-			String username = getEncryptedUser();
-			String password = getEncryptedPass();
-			conn = DriverManager.getConnection(
-					"jdbc:mysql://localhost:3306/securities?autoReconnect=true&useSSL=false&serverTimezone=UTC",
-					username, password);
-			conn.setAutoCommit(false);
-		} catch (SQLException | ClassNotFoundException e) {
-			System.out.println("Connect fail");
+			FileReader fileReader = new FileReader(propFileName);
+			prop.load(fileReader);
+		} catch (IOException e) {
+			logger.error("Database property file loading fail", e);
 		}
 	}
 
-	private String getEncryptedPass() {
-		return "q3300640";
+	private MySQLConnector() {
+
 	}
 
-	private String getEncryptedUser() {
-		return "root";
-	}
-
-	public Connection getConn() {
+	public static Connection getConn(String schema) {
+		if (StringUtils.isNotBlank(schema)) {
+			try {
+				Class.forName("com.mysql.cj.jdbc.Driver");
+				conn = DriverManager.getConnection(
+						"jdbc:mysql://localhost:3306/" + schema
+								+ "?autoReconnect=true&useSSL=false&serverTimezone=UTC",
+						prop.getProperty("user"), prop.getProperty("password"));
+				conn.setAutoCommit(false);
+			} catch (SQLException | ClassNotFoundException e) {
+				logger.error("Database Connecting fail", e);
+			}
+		} else {
+			logger.error("database schema can't be empty");
+		}
 		return conn;
 	}
 }
