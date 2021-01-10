@@ -20,7 +20,10 @@ rem *********************************
 rem run class, command line options
 rem *********************************
 
-set JAVA_ARGS= -Xmx1024m -Dauto=true -Dlog4j.config=properties/log4j.properties
+set JAVA_ARGS= -Xmx1024m ^
+-Dlog4j.config=properties/log4j.properties ^
+-Dprop.database=properties/Database.properties ^
+-Dauto=true
 
 "%JAVA_HOME%"\bin\java.exe -cp %CP% %JAVA_ARGS% com.kusoduck.securities.SecuritiesWebCrawler
 
