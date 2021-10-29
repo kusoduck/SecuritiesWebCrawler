@@ -17,18 +17,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.kusoduck.stock.constant.DailyQuotesColumn;
+import com.kusoduck.stock.constant.IndexDailyQuotesColumn;
 import com.kusoduck.utils.ParseHtmlUtils;
 
-public class DailyQuotesParser {
-	private static Logger logger = Logger.getLogger(DailyQuotesParser.class);
+public class IndexDailyQuotesParser {
+	private static Logger logger = Logger.getLogger(IndexDailyQuotesParser.class);
 	private static final String URL = "https://www.twse.com.tw/exchangeReport/MI_INDEX?response=html&type=ALLBUT0999&date=";
 
-	private DailyQuotesParser() {
+	private IndexDailyQuotesParser() {
 
 	}
 
-	public static List<Map<DailyQuotesColumn, String>> parse(String date) {
+	public static List<Map<IndexDailyQuotesColumn, String>> parse(String date) {
 		String url = URL + date;
 		logger.info(String.format("%s Daily Quotes(All(no Warrant & CBBC & OCBBC))", date));
 		logger.info(String.format("Parsing HTML: %s", url));
@@ -37,23 +37,18 @@ public class DailyQuotesParser {
 			Document doc = ParseHtmlUtils.getDocument(url);
 
 			Elements tableElements = doc.getElementsByTag("table");
-			Element targetTableElement = null;
 			for (Element tableElement : tableElements) {
 				Elements thElements = tableElement.getElementsByTag("th");
 				for (Element thElement : thElements) {
-					if (thElement.text().contains("全部(不含權證、牛熊證)")) {
-						targetTableElement = tableElement;
+					if (thElement.text().contains("價格指數(臺灣證券交易所)")) {
+						Map<Integer, IndexDailyQuotesColumn> orderColumnMap = new HashMap<>();
+						setOrderColumnMap(orderColumnMap, tableElement);
+
+						List<Map<IndexDailyQuotesColumn, String>> stockTradeDataList = new ArrayList<>();
+						addStockData2List(stockTradeDataList, orderColumnMap, tableElement);
+						return stockTradeDataList;
 					}
 				}
-			}
-
-			if (targetTableElement != null) {
-				Map<Integer, DailyQuotesColumn> orderColumnMap = new HashMap<>();
-				setOrderColumnMap(orderColumnMap, targetTableElement);
-
-				List<Map<DailyQuotesColumn, String>> stockTradeDataList = new ArrayList<>();
-				addStockData2List(stockTradeDataList, orderColumnMap, targetTableElement);
-				return stockTradeDataList;
 			}
 		} catch (IOException e) {
 			logger.error(e.getMessage());
@@ -61,11 +56,12 @@ public class DailyQuotesParser {
 		return new ArrayList<>();
 	}
 
-	private static void addStockData2List(List<Map<DailyQuotesColumn, String>> stockTradeDataList, Map<Integer, DailyQuotesColumn> titleOrderMap,
+	private static void addStockData2List(List<Map<IndexDailyQuotesColumn, String>> stockTradeDataList,
+			Map<Integer, IndexDailyQuotesColumn> titleOrderMap,
 			Element targetTableElement) {
 		for (Element tbodyElement : targetTableElement.getElementsByTag("tbody")) {
 			for (Element trElement : tbodyElement.getElementsByTag("tr")) {
-				Map<DailyQuotesColumn, String> stockTradeDataMap = new EnumMap<>(DailyQuotesColumn.class);
+				Map<IndexDailyQuotesColumn, String> stockTradeDataMap = new EnumMap<>(IndexDailyQuotesColumn.class);
 				for (Element tdElement : trElement.getElementsByTag("td")) {
 					stockTradeDataMap.put(titleOrderMap.get(tdElement.elementSiblingIndex()), tdElement.text());
 				}
@@ -75,11 +71,11 @@ public class DailyQuotesParser {
 
 	}
 
-	private static void setOrderColumnMap(Map<Integer, DailyQuotesColumn> titleOrderMap, Element targetTableElement) {
+	private static void setOrderColumnMap(Map<Integer, IndexDailyQuotesColumn> titleOrderMap, Element targetTableElement) {
 		for (Element theadElement : targetTableElement.getElementsByTag("thead")) {
 			for (Element trElement : theadElement.getElementsByTag("tr")) {
 				for (Element tdElement : trElement.getElementsByTag("td")) {
-					DailyQuotesColumn dailyClostingMarketDataType = DailyQuotesColumn.getByZhTitle(tdElement.text());
+					IndexDailyQuotesColumn dailyClostingMarketDataType = IndexDailyQuotesColumn.getByZhTitle(tdElement.text());
 					if (dailyClostingMarketDataType != null) {
 						titleOrderMap.put(tdElement.elementSiblingIndex(), dailyClostingMarketDataType);
 					}

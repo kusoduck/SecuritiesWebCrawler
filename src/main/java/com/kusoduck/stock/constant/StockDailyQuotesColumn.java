@@ -1,6 +1,6 @@
 package com.kusoduck.stock.constant;
 
-public enum DailyQuotesColumn {
+public enum StockDailyQuotesColumn {
 	SECURITY_CODE("證券代號"),
 	SECURITY_NAME("證券名稱"),
 	TRADE_VOLUME("成交股數"),
@@ -20,15 +20,15 @@ public enum DailyQuotesColumn {
 
 	private String zhTitle;
 
-	private DailyQuotesColumn(String zhTitle) {
+	private StockDailyQuotesColumn(String zhTitle) {
 		setZhTitle(zhTitle);
 	}
 
-	public static DailyQuotesColumn getByZhTitle(String value) {
+	public static StockDailyQuotesColumn getByZhTitle(String value) {
 		if (value != null) {
 			String realValue = value.trim();
 			if (!realValue.isEmpty()) {
-				for (DailyQuotesColumn key : values()) {
+				for (StockDailyQuotesColumn key : values()) {
 					if (key.getZhTitle().equals(realValue)) {
 						return key;
 					}

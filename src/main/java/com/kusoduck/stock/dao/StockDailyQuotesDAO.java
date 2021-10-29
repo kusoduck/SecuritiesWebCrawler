@@ -12,23 +12,23 @@ import org.apache.log4j.Logger;
 
 import com.kusoduck.common.dao.CommonDAO;
 import com.kusoduck.common.dao.DbTableDataBean;
-import com.kusoduck.stock.constant.DailyQuotesColumn;
+import com.kusoduck.stock.constant.StockDailyQuotesColumn;
 
-public class DailyQuotesDAO {
-	private static Logger logger = Logger.getLogger(DailyQuotesDAO.class);
+public class StockDailyQuotesDAO {
+	private static Logger logger = Logger.getLogger(StockDailyQuotesDAO.class);
 	private static final String TABLE = "t_daily_quotes";
 
-	private DailyQuotesDAO() {
+	private StockDailyQuotesDAO() {
 
 	}
 
-	public static void create(Connection conn, String date, List<Map<DailyQuotesColumn, String>> dailyQuotes) {
-		for (Map<DailyQuotesColumn, String> stockDailyQuotesMap : dailyQuotes) {
+	public static void create(Connection conn, String date, List<Map<StockDailyQuotesColumn, String>> dailyQuotes) {
+		for (Map<StockDailyQuotesColumn, String> stockDailyQuotesMap : dailyQuotes) {
 			List<DbTableDataBean> dataBean = new ArrayList<>();
 			dataBean.add(new DbTableDataBean("TRADE_DATE", date));
-			for (Entry<DailyQuotesColumn, String> stockDailyQuotesEntry : stockDailyQuotesMap.entrySet()) {
+			for (Entry<StockDailyQuotesColumn, String> stockDailyQuotesEntry : stockDailyQuotesMap.entrySet()) {
 				String value = stockDailyQuotesEntry.getValue().replace(",", "");
-				DailyQuotesColumn dailyQuotesColumn = stockDailyQuotesEntry.getKey();
+				StockDailyQuotesColumn dailyQuotesColumn = stockDailyQuotesEntry.getKey();
 				switch (dailyQuotesColumn) {
 				case SECURITY_CODE:
 				case SECURITY_NAME:

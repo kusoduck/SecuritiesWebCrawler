@@ -19,12 +19,15 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import com.kusoduck.securities.html.parser.DailyQuotesParser;
+import com.kusoduck.securities.html.parser.IndexDailyQuotesParser;
+import com.kusoduck.securities.html.parser.StockDailyQuotesParser;
 import com.kusoduck.securities.html.parser.StockInfoParser;
 import com.kusoduck.securities.html.parser.StockRatiosParser;
-import com.kusoduck.stock.constant.DailyQuotesColumn;
+import com.kusoduck.stock.constant.IndexDailyQuotesColumn;
+import com.kusoduck.stock.constant.StockDailyQuotesColumn;
 import com.kusoduck.stock.constant.StockRatiosColumn;
-import com.kusoduck.stock.dao.DailyQuotesDAO;
+import com.kusoduck.stock.dao.StockDailyQuotesDAO;
+import com.kusoduck.stock.dao.IndexDailyQuotesDAO;
 import com.kusoduck.stock.dao.StockInfoDAO;
 import com.kusoduck.stock.dao.StockRatioDAO;
 import com.kusoduck.utils.MySQLConnector;
@@ -82,6 +85,11 @@ public class SecuritiesWebCrawler {
 						date1 = calen.getTime();
 						parseHtmlSecuritiesInfo(formatDate.format(date1), conn);
 						calen.add(Calendar.DATE, 1);
+
+						try {
+							Thread.sleep(10000);
+						} catch (InterruptedException ex) {
+						}
 					}
 				} else {
 					parseHtmlSecuritiesInfo(startDate, conn);
@@ -98,11 +106,18 @@ public class SecuritiesWebCrawler {
 	}
 
 	private static void parseHtmlSecuritiesInfo(String date, Connection conn) {
-		List<Map<DailyQuotesColumn, String>> stockDailyQuotes = DailyQuotesParser.parse(date);
-		if (CollectionUtils.isNotEmpty(stockDailyQuotes)) {
-			DailyQuotesDAO.create(conn, date, stockDailyQuotes);
+		List<Map<IndexDailyQuotesColumn, String>> indiceDailyQuotes = IndexDailyQuotesParser.parse(date);
+		if (CollectionUtils.isNotEmpty(indiceDailyQuotes)) {
+			IndexDailyQuotesDAO.create(conn, date, indiceDailyQuotes);
 		} else {
-			logger.info(String.format("Daily Quotes No data(%s)", date));
+			logger.info(String.format("Indice Daily Quotes No data(%s)", date));
+		}
+
+		List<Map<StockDailyQuotesColumn, String>> stockDailyQuotes = StockDailyQuotesParser.parse(date);
+		if (CollectionUtils.isNotEmpty(stockDailyQuotes)) {
+			StockDailyQuotesDAO.create(conn, date, stockDailyQuotes);
+		} else {
+			logger.info(String.format("Stock Daily Quotes No data(%s)", date));
 		}
 
 		List<Map<StockRatiosColumn, String>> stockRatios = StockRatiosParser.parse(date);
