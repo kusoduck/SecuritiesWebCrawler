@@ -20,14 +20,17 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
 import com.kusoduck.securities.html.parser.IndexDailyQuotesParser;
+import com.kusoduck.securities.html.parser.InvestorsDailyTradingParser;
 import com.kusoduck.securities.html.parser.StockDailyQuotesParser;
 import com.kusoduck.securities.html.parser.StockInfoParser;
 import com.kusoduck.securities.html.parser.StockRatiosParser;
 import com.kusoduck.stock.constant.IndexDailyQuotesColumn;
+import com.kusoduck.stock.constant.InvestorsDailyTradingColumn;
 import com.kusoduck.stock.constant.StockDailyQuotesColumn;
 import com.kusoduck.stock.constant.StockRatiosColumn;
-import com.kusoduck.stock.dao.StockDailyQuotesDAO;
 import com.kusoduck.stock.dao.IndexDailyQuotesDAO;
+import com.kusoduck.stock.dao.InvestorsDailyTradingDAO;
+import com.kusoduck.stock.dao.StockDailyQuotesDAO;
 import com.kusoduck.stock.dao.StockInfoDAO;
 import com.kusoduck.stock.dao.StockRatioDAO;
 import com.kusoduck.utils.MySQLConnector;
@@ -127,13 +130,12 @@ public class SecuritiesWebCrawler {
 			logger.info(String.format("Stock Ratio No data(%s)", date));
 		}
 
-//		List<Map<InvestorsDailyTradingColumn, String>> investorsDailyTradings = InvestorsDailyTradingParser
-//				.parse(date);
-//		if (CollectionUtils.isNotEmpty(investorsDailyTradings)) {
-//			InvestorsDailyTradingDAO.create(conn, date, investorsDailyTradings);
-//		} else {
-//			logger.info(String.format("Investors Daily Trading No data(%s)", date));
-//		}
+		List<Map<InvestorsDailyTradingColumn, String>> investorsDailyTradings = InvestorsDailyTradingParser.parse(date);
+		if (CollectionUtils.isNotEmpty(investorsDailyTradings)) {
+			InvestorsDailyTradingDAO.create(conn, date, investorsDailyTradings);
+		} else {
+			logger.info(String.format("Investors Daily Trading No data(%s)", date));
+		}
 
 	}
 }
