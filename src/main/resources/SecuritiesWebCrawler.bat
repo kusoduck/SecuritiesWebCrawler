@@ -25,7 +25,7 @@ set JAVA_ARGS= -Xmx1024m ^
 -Dprop.database=properties/Database.properties ^
 -Dauto=true
 
-"%JAVA_HOME%"\bin\java.exe -cp %CP% %JAVA_ARGS% com.kusoduck.securities.SecuritiesWebCrawler
+"%JAVA_HOME%"\bin\java.exe -cp %CP% %JAVA_ARGS% com.kusoduck.stock.app.SecuritiesWebCrawler
 
 goto done
 

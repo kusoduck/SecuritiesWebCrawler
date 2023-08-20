@@ -73,7 +73,7 @@ public class InvestorsDailyTradingParser {
 	private static void setOrderColumnMap(Map<Integer, InvestorsDailyTradingColumn> orderColumnMap, Element targetTableElement) {
 		for (Element theadElement : targetTableElement.getElementsByTag("thead")) {
 			for (Element trElement : theadElement.getElementsByTag("tr")) {
-				for (Element tdElement : trElement.getElementsByTag("td")) {
+				for (Element tdElement : trElement.getElementsByTag("th")) {
 					InvestorsDailyTradingColumn investorsDailyTradingColumn = InvestorsDailyTradingColumn.getByZhTitle(tdElement.text());
 					if (investorsDailyTradingColumn != null) {
 						orderColumnMap.put(tdElement.elementSiblingIndex(), investorsDailyTradingColumn);

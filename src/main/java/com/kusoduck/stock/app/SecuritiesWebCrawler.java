@@ -3,12 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.kusoduck.securities;
+package com.kusoduck.stock.app;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -28,11 +29,14 @@ import com.kusoduck.stock.constant.IndexDailyQuotesColumn;
 import com.kusoduck.stock.constant.InvestorsDailyTradingColumn;
 import com.kusoduck.stock.constant.StockDailyQuotesColumn;
 import com.kusoduck.stock.constant.StockRatiosColumn;
+import com.kusoduck.stock.crawler.EpsCrawler;
+import com.kusoduck.stock.dao.EpsDAO;
 import com.kusoduck.stock.dao.IndexDailyQuotesDAO;
 import com.kusoduck.stock.dao.InvestorsDailyTradingDAO;
 import com.kusoduck.stock.dao.StockDailyQuotesDAO;
 import com.kusoduck.stock.dao.StockInfoDAO;
 import com.kusoduck.stock.dao.StockRatioDAO;
+import com.kusoduck.stock.po.EpsPO;
 import com.kusoduck.utils.MySQLConnector;
 
 public class SecuritiesWebCrawler {
@@ -103,39 +107,57 @@ public class SecuritiesWebCrawler {
 			}
 			logger.info("End");
 
-		} catch (SQLException | ParseException e) {
+		} catch (Exception e) {
 			logger.error(e.getMessage());
 		}
 	}
 
-	private static void parseHtmlSecuritiesInfo(String date, Connection conn) {
-		List<Map<IndexDailyQuotesColumn, String>> indiceDailyQuotes = IndexDailyQuotesParser.parse(date);
+	private static void parseHtmlSecuritiesInfo(String dateString, Connection conn) throws SQLException {
+		List<Map<IndexDailyQuotesColumn, String>> indiceDailyQuotes = IndexDailyQuotesParser.parse(dateString);
 		if (CollectionUtils.isNotEmpty(indiceDailyQuotes)) {
-			IndexDailyQuotesDAO.create(conn, date, indiceDailyQuotes);
+			IndexDailyQuotesDAO.create(conn, dateString, indiceDailyQuotes);
 		} else {
-			logger.info(String.format("Indice Daily Quotes No data(%s)", date));
+			logger.info(String.format("Indice Daily Quotes No data(%s)", dateString));
 		}
 
-		List<Map<StockDailyQuotesColumn, String>> stockDailyQuotes = StockDailyQuotesParser.parse(date);
+		List<Map<StockDailyQuotesColumn, String>> stockDailyQuotes = StockDailyQuotesParser.parse(dateString);
 		if (CollectionUtils.isNotEmpty(stockDailyQuotes)) {
-			StockDailyQuotesDAO.create(conn, date, stockDailyQuotes);
+			StockDailyQuotesDAO.create(conn, dateString, stockDailyQuotes);
 		} else {
-			logger.info(String.format("Stock Daily Quotes No data(%s)", date));
+			logger.info(String.format("Stock Daily Quotes No data(%s)", dateString));
 		}
 
-		List<Map<StockRatiosColumn, String>> stockRatios = StockRatiosParser.parse(date);
+		List<Map<StockRatiosColumn, String>> stockRatios = StockRatiosParser.parse(dateString);
 		if (CollectionUtils.isNotEmpty(stockRatios)) {
-			StockRatioDAO.create(conn, date, stockRatios);
+			StockRatioDAO.create(conn, dateString, stockRatios);
 		} else {
-			logger.info(String.format("Stock Ratio No data(%s)", date));
+			logger.info(String.format("Stock Ratio No data(%s)", dateString));
 		}
 
-		List<Map<InvestorsDailyTradingColumn, String>> investorsDailyTradings = InvestorsDailyTradingParser.parse(date);
+		List<Map<InvestorsDailyTradingColumn, String>> investorsDailyTradings = InvestorsDailyTradingParser
+				.parse(dateString);
 		if (CollectionUtils.isNotEmpty(investorsDailyTradings)) {
-			InvestorsDailyTradingDAO.create(conn, date, investorsDailyTradings);
+			InvestorsDailyTradingDAO.create(conn, dateString, investorsDailyTradings);
 		} else {
-			logger.info(String.format("Investors Daily Trading No data(%s)", date));
+			logger.info(String.format("Investors Daily Trading No data(%s)", dateString));
 		}
 
+		handelEpsCrawler(dateString, conn);
+	}
+
+	private static void handelEpsCrawler(String dateString, Connection conn) throws SQLException {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+		LocalDate localDate = LocalDate.parse(dateString, formatter);
+		int year = localDate.getYear();
+		int rocYear = year-1911;
+		int monthValue = localDate.getMonthValue();
+		int quarter = (monthValue - 1) / 3 + 1;
+		int lastQuarter = (quarter + 2) % 4 + 1;
+		logger.debug(year + "-" + lastQuarter);
+		List<EpsPO> epsPOs = EpsCrawler.crawl(rocYear, lastQuarter);
+		List<EpsPO> dbEpsPO =EpsDAO.find(conn, year, lastQuarter);
+		epsPOs = (List<EpsPO>) CollectionUtils.removeAll(epsPOs, dbEpsPO);
+		EpsDAO.insert(conn, epsPOs);
+		conn.commit();
 	}
 }

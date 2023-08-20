@@ -17,7 +17,8 @@
 	<build>
 		<plugins>
 			<plugin>
-				<!-- org.apache.maven.plugins:maven-dependency-plugin:3.1.2:build-classpath -->
+				<!--
+				org.apache.maven.plugins:maven-dependency-plugin:3.1.2:build-classpath -->
 				<!-- <groupId>org.apache.maven.plugins</groupId> -->
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>3.1.2</version>
@@ -61,7 +62,8 @@
 						</goals>
 						<configuration>
 							<descriptors>
-								<descriptor>src/main/resources/assemblies/myassembly.xml</descriptor>
+								<descriptor>
+									src/main/resources/assemblies/myassembly.xml</descriptor>
 							</descriptors>
 						</configuration>
 					</execution>
@@ -83,11 +85,19 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.9</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
+		<!--
+		https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
 			<version>4.3</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/commons-dbutils/commons-dbutils -->
+		<!-- QueryRunner -->
+		<dependency>
+			<groupId>commons-dbutils</groupId>
+			<artifactId>commons-dbutils</artifactId>
+			<version>1.7</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
 		<dependency>
