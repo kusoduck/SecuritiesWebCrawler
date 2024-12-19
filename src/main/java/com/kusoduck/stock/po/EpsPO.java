@@ -20,13 +20,14 @@ public class EpsPO {
 	}
 
 	public EpsPO(ResultSet rs) throws SQLException {
-		this.securityCode = rs.getString("SECURITY_CODE");
-		this.year = rs.getDate("YEAR").toLocalDate().getYear();
-		this.season = rs.getInt("SEASON");
+		securityCode = rs.getString("SECURITY_CODE");
+		year = rs.getDate("YEAR").toLocalDate().getYear();
+		season = rs.getInt("SEASON");
+		eps = rs.getBigDecimal("EPS");
 	}
 
 	public String getSecurityCode() {
-		return this.securityCode;
+		return securityCode;
 	}
 
 	public void setSecurityCode(String securityCode) {
@@ -34,7 +35,7 @@ public class EpsPO {
 	}
 
 	public int getYear() {
-		return this.year;
+		return year;
 	}
 
 	public void setYear(int year) {
@@ -42,7 +43,7 @@ public class EpsPO {
 	}
 
 	public int getSeason() {
-		return this.season;
+		return season;
 	}
 
 	public void setSeason(int season) {
@@ -50,7 +51,7 @@ public class EpsPO {
 	}
 
 	public BigDecimal getOperatingIncome() {
-		return this.operatingIncome;
+		return operatingIncome;
 	}
 
 	public void setOperatingIncome(BigDecimal operatingIncome) {
@@ -58,7 +59,7 @@ public class EpsPO {
 	}
 
 	public BigDecimal getOperatingProfitLoss() {
-		return this.operatingProfitLoss;
+		return operatingProfitLoss;
 	}
 
 	public void setOperatingProfitLoss(BigDecimal operatingProfitLoss) {
@@ -66,7 +67,7 @@ public class EpsPO {
 	}
 
 	public BigDecimal getNonIndustryIncome() {
-		return this.nonIndustryIncome;
+		return nonIndustryIncome;
 	}
 
 	public void setNonIndustryIncome(BigDecimal nonIndustryIncome) {
@@ -74,7 +75,7 @@ public class EpsPO {
 	}
 
 	public BigDecimal getPreTaxProfitLoss() {
-		return this.preTaxProfitLoss;
+		return preTaxProfitLoss;
 	}
 
 	public void setPreTaxProfitLoss(BigDecimal preTaxProfitLoss) {
@@ -82,7 +83,7 @@ public class EpsPO {
 	}
 
 	public BigDecimal getAfterTaxProfitLoss() {
-		return this.afterTaxProfitLoss;
+		return afterTaxProfitLoss;
 	}
 
 	public void setAfterTaxProfitLoss(BigDecimal afterTaxProfitLoss) {
@@ -90,7 +91,7 @@ public class EpsPO {
 	}
 
 	public BigDecimal getEps() {
-		return this.eps;
+		return eps;
 	}
 
 	public void setEps(BigDecimal eps) {
@@ -99,7 +100,7 @@ public class EpsPO {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.season, this.securityCode, this.year);
+		return Objects.hash(season, securityCode, year);
 	}
 
 	@Override
@@ -111,7 +112,7 @@ public class EpsPO {
 			return false;
 		}
 		EpsPO other = (EpsPO) obj;
-		return this.season == other.season && Objects.equals(this.securityCode, other.securityCode) && this.year == other.year;
+		return season == other.season && Objects.equals(securityCode, other.securityCode) && year == other.year;
 	}
 
 }

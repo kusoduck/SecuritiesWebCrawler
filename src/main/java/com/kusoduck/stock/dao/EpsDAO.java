@@ -14,7 +14,7 @@ import com.kusoduck.stock.po.EpsPO;
 public class EpsDAO {
 
 	public static List<EpsPO> find(Connection conn, int year, int season) {
-		List<EpsPO> epsPOs = new ArrayList<EpsPO>();
+		List<EpsPO> epsPOs = new ArrayList<>();
 		String sql = "select * from t_stock_eps where YEAR=? and SEASON=?";
 		try(PreparedStatement ps = conn.prepareStatement(sql)){
 			int i = 1;
@@ -33,6 +33,28 @@ public class EpsDAO {
 			e.printStackTrace();
 		}
 		return epsPOs;
+	}
+
+	public static EpsPO find(Connection conn, int year, int season, String securityCode) {
+		List<EpsPO> epsPOs = new ArrayList<>();
+		String sql = "select * from t_stock_eps where YEAR=? and SEASON=? and SECURITY_CODE=?";
+		try(PreparedStatement ps = conn.prepareStatement(sql)){
+			int i = 1;
+			ps.setInt(i++, year);
+			ps.setInt(i++, season);
+			ps.setString(i, securityCode);
+
+			try(ResultSet rs = ps.executeQuery()){
+				if(rs.next()) {
+					return new EpsPO(rs);
+				}
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	public static void insert(Connection conn, List<EpsPO> epsPOs) {

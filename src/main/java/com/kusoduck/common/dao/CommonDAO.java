@@ -44,14 +44,13 @@ public class CommonDAO {
 		} catch (SQLException e) {
 			logger.error(e.getMessage());
 			for (DbTableDataBean bean : cols) {
-				logger.debug(String.format("%s:%s", bean.getColumnName(), bean.getColumnValue()));
+				logger.debug(bean.getColumnName() + " : " + bean.getColumnValue());
 			}
 			return 0;
 		}
 	}
 
-	public static int update(Connection conn, String tableName, List<DbTableDataBean> cols,
-			List<DbTableDataBean> condition) {
+	public static int update(Connection conn, String tableName, List<DbTableDataBean> cols, List<DbTableDataBean> condition) {
 		int updateCount = 0;
 		boolean isFirst = true;
 		StringBuilder updateSQL = new StringBuilder();

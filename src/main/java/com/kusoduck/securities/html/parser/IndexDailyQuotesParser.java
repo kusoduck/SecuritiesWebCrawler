@@ -74,7 +74,7 @@ public class IndexDailyQuotesParser {
 	private static void setOrderColumnMap(Map<Integer, IndexDailyQuotesColumn> titleOrderMap, Element targetTableElement) {
 		for (Element theadElement : targetTableElement.getElementsByTag("thead")) {
 			for (Element trElement : theadElement.getElementsByTag("tr")) {
-				for (Element tdElement : trElement.getElementsByTag("td")) {
+				for (Element tdElement : trElement.getElementsByTag("th")) {
 					IndexDailyQuotesColumn dailyClostingMarketDataType = IndexDailyQuotesColumn.getByZhTitle(tdElement.text());
 					if (dailyClostingMarketDataType != null) {
 						titleOrderMap.put(tdElement.elementSiblingIndex(), dailyClostingMarketDataType);

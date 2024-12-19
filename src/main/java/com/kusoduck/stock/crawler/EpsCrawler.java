@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -15,17 +16,14 @@ import org.jsoup.select.Elements;
 import com.kusoduck.stock.po.EpsPO;
 
 public class EpsCrawler {
-	//	private static Logger logger = Logger.getLogger(EpsCrawler.class);
+	private static Logger logger = Logger.getLogger(EpsCrawler.class);
 
-	//	public static void main(String[] args) {
-	//		crawl(LocalDate.now());
-	//	}
-
-	public static List<EpsPO> crawl(int year, int season) {
+	public static List<EpsPO> crawl(int rocYear, int season) {
 		try {
+			// https://mops.twse.com.tw/mops/web/t163sb04
 			String url = "https://mops.twse.com.tw/mops/web/ajax_t163sb04";
 			Document document = Jsoup.connect(url).data("encodeURIComponent", "1").data("step", "1")
-					.data("firstin", "1").data("off", "1").data("TYPEK", "sii").data("year", String.valueOf(year))
+					.data("firstin", "1").data("off", "1").data("TYPEK", "sii").data("year", String.valueOf(rocYear))
 					.data("season", String.valueOf(season)).post();
 
 			List<EpsPO> epsPOs = new ArrayList<>();
@@ -38,7 +36,7 @@ public class EpsCrawler {
 				if (dataRows.isEmpty()) {
 					dataRows = table.select("tr.even");
 				}
-				dataCrawler(columnIndexTitleMap, dataRows, epsPOs, year, season);
+				dataCrawler(columnIndexTitleMap, dataRows, epsPOs, rocYear, season);
 			}
 
 			return epsPOs;

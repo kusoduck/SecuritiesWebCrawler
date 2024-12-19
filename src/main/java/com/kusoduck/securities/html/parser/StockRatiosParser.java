@@ -63,8 +63,14 @@ public class StockRatiosParser {
 		for (Element tbodyElement : targetTableElement.getElementsByTag("tbody")) {
 			for (Element trElement : tbodyElement.getElementsByTag("tr")) {
 				Map<StockRatiosColumn, String> stockRatioDataMap = new EnumMap<>(StockRatiosColumn.class);
+				if (trElement.getElementsByTag("td").size() == 0) {
+					System.out.println(trElement.text());
+				}
 				for (Element tdElement : trElement.getElementsByTag("td")) {
-					stockRatioDataMap.put(titleOrderMap.get(tdElement.elementSiblingIndex()), tdElement.text());
+					StockRatiosColumn stockRatiosColumn = titleOrderMap.get(tdElement.elementSiblingIndex());
+					if (stockRatiosColumn != null) {
+						stockRatioDataMap.put(stockRatiosColumn, tdElement.text());
+					}
 				}
 				stockRatioDataList.add(stockRatioDataMap);
 			}
@@ -74,7 +80,7 @@ public class StockRatiosParser {
 	private static void setOrderColumnMap(Map<Integer, StockRatiosColumn> titleOrderMap, Element targetTableElement) {
 		for (Element theadElement : targetTableElement.getElementsByTag("thead")) {
 			for (Element trElement : theadElement.getElementsByTag("tr")) {
-				for (Element tdElement : trElement.getElementsByTag("td")) {
+				for (Element tdElement : trElement.getElementsByTag("th")) {
 					StockRatiosColumn ratiosOfSecuritiesColumn = StockRatiosColumn.getByZhTitle(tdElement.text());
 					if (ratiosOfSecuritiesColumn != null) {
 						titleOrderMap.put(tdElement.elementSiblingIndex(), ratiosOfSecuritiesColumn);

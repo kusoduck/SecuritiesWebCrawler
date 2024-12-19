@@ -22,14 +22,15 @@ import com.kusoduck.utils.ParseHtmlUtils;
 
 public class InvestorsDailyTradingParser {
 	private static Logger logger = Logger.getLogger(InvestorsDailyTradingParser.class);
-	private static final String URL = "http://www.twse.com.tw/fund/T86?response=html&selectType=ALLBUT0999&date=";
+	private static final String URL = "https://www.twse.com.tw/rwd/zh/fund/T86?date=#date#&selectType=ALLBUT0999&response=html";
+	
 
 	private InvestorsDailyTradingParser() {
 
 	}
 
 	public static List<Map<InvestorsDailyTradingColumn, String>> parse(String date) {
-		String url = URL + date;
+		String url = URL.replace("#date#", date);
 		logger.info(String.format("%s Daily Trading Details of Foreign and Other Investors", date));
 		logger.info(String.format("Parsing HTML: %s", url));
 		try {

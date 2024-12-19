@@ -3,6 +3,7 @@ package com.kusoduck.stock.constant;
 public enum StockRatiosColumn {
 	SECURITY_CODE("證券代號"),
 	SECURITY_NAME("證券名稱"),
+//	CLOSING_PRICE("收盤價"),
 	DIVIDEND_YIELD("殖利率(%)"),
 	DIVIDEND_YEAR("股利年度"),
 	PER("本益比"),
@@ -11,7 +12,7 @@ public enum StockRatiosColumn {
 
 	private String zhTitle;
 
-	private StockRatiosColumn(String zhTitle) {
+	StockRatiosColumn(String zhTitle) {
 		this.setZhTitle(zhTitle);
 	}
 
