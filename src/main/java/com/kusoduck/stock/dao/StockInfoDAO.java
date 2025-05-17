@@ -8,10 +8,11 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StockInfoDAO {
-	private static Logger logger = Logger.getLogger(StockInfoDAO.class);
+	private static Logger logger = LoggerFactory.getLogger(StockInfoDAO.class);
 
 	private static final String SELECT = "SELECT security_code FROM t_stock_info";
 	private static final String INSERT = "INSERT INTO t_stock_info(security_code, security_name, listing_date, market, industry) VALUES(?, ?, ?, ?, ?)";

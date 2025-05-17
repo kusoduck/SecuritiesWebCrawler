@@ -12,16 +12,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.kusoduck.stock.constant.StockRatiosColumn;
 import com.kusoduck.utils.ParseHtmlUtils;
 
 public class StockRatiosParser {
-	private static Logger logger = Logger.getLogger(StockRatiosParser.class);
+	private static Logger logger = LoggerFactory.getLogger(StockRatiosParser.class);
+
 	private static final String URL = "https://www.twse.com.tw/exchangeReport/BWIBBU_d?response=html&selectType=ALL&date=";
 
 	private StockRatiosParser() {

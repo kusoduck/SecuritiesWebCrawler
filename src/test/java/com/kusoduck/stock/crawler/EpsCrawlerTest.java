@@ -10,16 +10,19 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.kusoduck.stock.dao.EpsDAO;
+import com.kusoduck.stock.env.MySQLConnector;
+import com.kusoduck.stock.env.StockCrawlerPropertyLoader;
 import com.kusoduck.stock.po.EpsPO;
-import com.kusoduck.utils.MySQLConnector;
 
 public class EpsCrawlerTest {
 
 	@BeforeAll
-	public static void loadDbDriver() throws IOException {
+	public static void init() throws IOException {
 		System.setProperty("prop.database", "src/main/resources/properties/Database.properties");
+		System.setProperty("prop.crawler", "src/main/resources/properties/StockCrawler.properties");
+		StockCrawlerPropertyLoader.init();
 	}
-	
+
 	@Test
 	public void testCrawl() throws SQLException {
 		int year = 2022;

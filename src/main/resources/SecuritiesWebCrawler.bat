@@ -21,8 +21,11 @@ rem run class, command line options
 rem *********************************
 
 set JAVA_ARGS= -Xmx1024m ^
--Dlog4j.config=properties/log4j.properties ^
+-Dlog4j.configurationFile=properties/log4j2.xml ^
 -Dprop.database=properties/Database.properties ^
+-Dprop.crawler=properties/StockCrawler.properties ^
+-Dprop.mail=properties/Mail.properties ^
+-Dencrypt.arg=tp6u4vm0 ^
 -Dauto=true
 
 "%JAVA_HOME%"\bin\java.exe -cp %CP% %JAVA_ARGS% com.kusoduck.stock.app.SecuritiesWebCrawler

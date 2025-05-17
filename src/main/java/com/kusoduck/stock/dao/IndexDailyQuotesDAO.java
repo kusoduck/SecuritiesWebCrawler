@@ -8,14 +8,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.kusoduck.common.dao.CommonDAO;
 import com.kusoduck.common.dao.DbTableDataBean;
 import com.kusoduck.stock.constant.IndexDailyQuotesColumn;
 
 public class IndexDailyQuotesDAO {
-	private static Logger logger = Logger.getLogger(IndexDailyQuotesDAO.class);
+	private static Logger logger = LoggerFactory.getLogger(IndexDailyQuotesDAO.class);
+
 	private static final String TABLE = "t_indice_daily_quotes";
 
 	private IndexDailyQuotesDAO() {

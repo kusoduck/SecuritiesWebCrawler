@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.kusoduck.utils;
+package com.kusoduck.stock.env;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -13,10 +13,11 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MySQLConnector {
-	private static Logger logger = Logger.getLogger(MySQLConnector.class);
+	private static Logger logger = LoggerFactory.getLogger(MySQLConnector.class);
 	private static String propFileName = System.getProperty("prop.database");
 	private static Properties prop = new Properties();
 	private static Connection conn;

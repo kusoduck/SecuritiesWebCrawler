@@ -12,18 +12,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.kusoduck.stock.constant.InvestorsDailyTradingColumn;
 import com.kusoduck.utils.ParseHtmlUtils;
 
 public class InvestorsDailyTradingParser {
-	private static Logger logger = Logger.getLogger(InvestorsDailyTradingParser.class);
+	private static Logger logger = LoggerFactory.getLogger(InvestorsDailyTradingParser.class);
+
 	private static final String URL = "https://www.twse.com.tw/rwd/zh/fund/T86?date=#date#&selectType=ALLBUT0999&response=html";
-	
+
 
 	private InvestorsDailyTradingParser() {
 

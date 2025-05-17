@@ -8,22 +8,14 @@
 	<baseDirectory>SecuritiesWebCrawler</baseDirectory>
 	<fileSets>
 		<fileSet>
-			<!-- all scripts applicable for platform -->
-			<directory>${project.basedir}/src/main/resources</directory>
-			<outputDirectory></outputDirectory>
-			<lineEnding>dos</lineEnding>
-			<includes>
-				<include>**/*.bat</include>
-			</includes>
-			<filtered>true</filtered>
-		</fileSet>
-		<fileSet>
-			<!-- all properties -->
+			<!-- file need to input -->
 			<directory>${project.basedir}/src/main/resources</directory>
 			<outputDirectory></outputDirectory>
 			<lineEnding>dos</lineEnding>
 			<includes>
 				<include>**/*.properties</include>
+				<include>**/log4j2.xml</include>
+				<include>**/*.bat</include>
 			</includes>
 			<filtered>true</filtered>
 		</fileSet>

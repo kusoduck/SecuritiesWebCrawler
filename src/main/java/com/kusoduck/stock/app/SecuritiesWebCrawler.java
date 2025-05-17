@@ -5,6 +5,8 @@
  */
 package com.kusoduck.stock.app;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -17,13 +19,15 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Scanner;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.kusoduck.exception.DataNotExistException;
 import com.kusoduck.exception.DateMismatchException;
 import com.kusoduck.securities.html.parser.IndexDailyQuotesParser;
 import com.kusoduck.securities.html.parser.InvestorsDailyTradingParser;
@@ -35,6 +39,7 @@ import com.kusoduck.stock.constant.InvestorsDailyTradingColumn;
 import com.kusoduck.stock.constant.StockDailyQuotesColumn;
 import com.kusoduck.stock.constant.StockRatiosColumn;
 import com.kusoduck.stock.crawler.EpsCrawler;
+import com.kusoduck.stock.dao.AccountDAO;
 import com.kusoduck.stock.dao.EpsDAO;
 import com.kusoduck.stock.dao.IndexDailyQuotesDAO;
 import com.kusoduck.stock.dao.InvestorsDailyTradingDAO;
@@ -42,17 +47,20 @@ import com.kusoduck.stock.dao.StockDailyQuotesDAO;
 import com.kusoduck.stock.dao.StockInfoDAO;
 import com.kusoduck.stock.dao.StockQuarterlyEpsDAO;
 import com.kusoduck.stock.dao.StockRatioDAO;
+import com.kusoduck.stock.env.MySQLConnector;
+import com.kusoduck.stock.env.StockCrawlerPropertyLoader;
+import com.kusoduck.stock.po.AccountPO;
 import com.kusoduck.stock.po.EpsPO;
 import com.kusoduck.stock.po.StockQuarterlyEpsPO;
 import com.kusoduck.utils.CalcuateQuarterUtils;
-import com.kusoduck.utils.MySQLConnector;
+import com.kusoduck.utils.EmailUtils;
+import com.kusoduck.utils.EncryptUtils;
 
 public class SecuritiesWebCrawler {
-	private static Logger logger = Logger.getLogger(SecuritiesWebCrawler.class);
+	private static Logger logger = LoggerFactory.getLogger(SecuritiesWebCrawler.class);
 
-	public static void main(String[] args) {
-		String log4jPath = System.getProperty("log4j.config", "src/log4j.properties");
-		PropertyConfigurator.configure(log4jPath);
+	public static void main(String[] args) throws IOException {
+		StockCrawlerPropertyLoader.init();
 
 		boolean isAuto = Boolean.parseBoolean(System.getProperty("auto", "true"));
 
@@ -117,11 +125,28 @@ public class SecuritiesWebCrawler {
 
 		} catch (Exception e) {
 			logger.error(e.getMessage());
+
+			/* Send Mail */
+				try (Connection conn = MySQLConnector.getConn("account")) {
+					AccountPO accountPo = AccountDAO.find(conn, "Gmail App");
+					String propFileName = System.getProperty("prop.mail");
+					FileReader fileReader = new FileReader(propFileName);
+					Properties emailProp = new Properties();
+					emailProp.load(fileReader);
+					String from = emailProp.getProperty("from");
+					String to = emailProp.getProperty("to");
+
+					EmailUtils.sendFromGmail(accountPo.getAccount(), EncryptUtils.decrypt(accountPo.getPassword()),
+									from, to, "Stock crawler fail", e.getMessage());
+
+				} catch (SQLException | IOException e1) {
+					logger.error(e1.getMessage(), e1);
+				}
 		}
 	}
 
 	private static void parseHtmlSecuritiesInfo(String dateString, Connection conn)
-			throws SQLException, DateMismatchException {
+			throws SQLException, DateMismatchException, DataNotExistException {
 		List<Map<IndexDailyQuotesColumn, String>> indiceDailyQuotes = IndexDailyQuotesParser.parse(dateString);
 		if (CollectionUtils.isNotEmpty(indiceDailyQuotes)) {
 			IndexDailyQuotesDAO.create(conn, dateString, indiceDailyQuotes);
@@ -143,8 +168,7 @@ public class SecuritiesWebCrawler {
 			logger.info(String.format("Stock Ratio No data(%s)", dateString));
 		}
 
-		List<Map<InvestorsDailyTradingColumn, String>> investorsDailyTradings = InvestorsDailyTradingParser
-				.parse(dateString);
+		List<Map<InvestorsDailyTradingColumn, String>> investorsDailyTradings = InvestorsDailyTradingParser.parse(dateString);
 		if (CollectionUtils.isNotEmpty(investorsDailyTradings)) {
 			InvestorsDailyTradingDAO.create(conn, dateString, investorsDailyTradings);
 		} else {
@@ -156,7 +180,8 @@ public class SecuritiesWebCrawler {
 		handelEpsCrawler(dateString, conn);
 	}
 
-	private static void ckeckData(Connection conn, String dateString) throws SQLException, DateMismatchException {
+	private static void ckeckData(Connection conn, String dateString) throws SQLException, DateMismatchException, DataNotExistException {
+		String formattedDate = dateString.substring(0, 4) + "-" + dateString.substring(4, 6) + "-" + dateString.substring(6, 8);
 		String date = "";
 		String sql = "select * from v_trade_date order by trade_date desc limit 0,1";
 		try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -165,6 +190,10 @@ public class SecuritiesWebCrawler {
 					date = rs.getString("trade_date");
 				}
 			}
+		}
+
+		if (!formattedDate.equals(date)) {
+			throw new DataNotExistException("Didn't get daily quotes data("+formattedDate+")");
 		}
 
 		sql = "select distinct trade_date from securities.t_stock_ratio order by TRADE_DATE desc limit 0,1";
@@ -190,8 +219,8 @@ public class SecuritiesWebCrawler {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		LocalDate localDate = LocalDate.parse(dateString, formatter);
 		Pair<Integer, Integer> currentYearQuarter = CalcuateQuarterUtils.getYearAndQuarter(localDate);
-		Pair<Integer, Integer> previousYearQuarter = CalcuateQuarterUtils
-				.calcPreviousQuarter(currentYearQuarter.getLeft(), currentYearQuarter.getRight());
+		Pair<Integer, Integer> previousYearQuarter = CalcuateQuarterUtils.calcPreviousQuarter(currentYearQuarter.getLeft(),
+				currentYearQuarter.getRight());
 		logger.debug(previousYearQuarter.getLeft() + "-" + previousYearQuarter.getRight());
 
 		int year = previousYearQuarter.getLeft();
@@ -206,16 +235,13 @@ public class SecuritiesWebCrawler {
 		if (quarter > 1) {
 			for (EpsPO epsPO : epsPOs) {
 				// 取得上一季的前一季，用來計算季與季的差額
-				Pair<Integer, Integer> lastYearQuarterPair = CalcuateQuarterUtils.calcPreviousQuarter(year,
-						quarter);
+				Pair<Integer, Integer> lastYearQuarterPair = CalcuateQuarterUtils.calcPreviousQuarter(year, quarter);
 
 				String stockSymbol = epsPO.getSecurityCode();
-				EpsPO lastEpsPO = EpsDAO.find(conn, lastYearQuarterPair.getLeft(), lastYearQuarterPair.getRight(),
-						stockSymbol);
+				EpsPO lastEpsPO = EpsDAO.find(conn, lastYearQuarterPair.getLeft(), lastYearQuarterPair.getRight(), stockSymbol);
 				if (lastEpsPO != null) {
 					BigDecimal quarterlyEps = epsPO.getEps().subtract(lastEpsPO.getEps());
-					StockQuarterlyEpsPO stockQuarterlyEpsPO = new StockQuarterlyEpsPO(stockSymbol, year, quarter,
-							quarterlyEps);
+					StockQuarterlyEpsPO stockQuarterlyEpsPO = new StockQuarterlyEpsPO(stockSymbol, year, quarter, quarterlyEps);
 					StockQuarterlyEpsDAO.create(conn, stockQuarterlyEpsPO);
 				}
 			}

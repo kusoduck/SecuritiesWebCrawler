@@ -6,10 +6,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.kusoduck.stock.dao.StockInfoDAO;
 import com.kusoduck.utils.ParseHtmlUtils;
@@ -25,7 +26,7 @@ import com.kusoduck.utils.ParseHtmlUtils;
  * @author kusoduck
  */
 public class StockInfoParser {
-	private static Logger logger = Logger.getLogger(StockInfoParser.class);
+	private static Logger logger = LoggerFactory.getLogger(StockInfoParser.class);
 
 	private static final String URL = "http://isin.twse.com.tw/isin/C_public.jsp?strMode=2";
 

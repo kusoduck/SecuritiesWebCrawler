@@ -36,7 +36,6 @@ public class EpsDAO {
 	}
 
 	public static EpsPO find(Connection conn, int year, int season, String securityCode) {
-		List<EpsPO> epsPOs = new ArrayList<>();
 		String sql = "select * from t_stock_eps where YEAR=? and SEASON=? and SECURITY_CODE=?";
 		try(PreparedStatement ps = conn.prepareStatement(sql)){
 			int i = 1;

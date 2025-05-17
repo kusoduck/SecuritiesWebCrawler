@@ -1,15 +1,12 @@
 package com.kusoduck.utils;
 
 import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLSession;
 
 public class SSLUtils {
 
-	HostnameVerifier hv = new HostnameVerifier() {
-		public boolean verify(String urlHostName, SSLSession session) {
-			System.out.println("Warning: URL Host: " + urlHostName + " vs. " + session.getPeerHost());
-			return true;
-		}
+	HostnameVerifier hv = (urlHostName, session) -> {
+		System.out.println("Warning: URL Host: " + urlHostName + " vs. " + session.getPeerHost());
+		return true;
 	};
 
 	public static void trustAllHttpsCertificates() throws Exception {
@@ -27,22 +24,20 @@ public class SSLUtils {
 			return null;
 		}
 
-		public boolean isServerTrusted(java.security.cert.X509Certificate[] certs) {
+		public boolean isServerTrusted() {
 			return true;
 		}
 
-		public boolean isClientTrusted(java.security.cert.X509Certificate[] certs) {
+		public boolean isClientTrusted() {
 			return true;
 		}
 
 		@Override
 		public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) throws java.security.cert.CertificateException {
-			return;
 		}
 
 		@Override
 		public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) throws java.security.cert.CertificateException {
-			return;
 		}
 	}
 }
