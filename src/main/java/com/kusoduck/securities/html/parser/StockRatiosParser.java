@@ -7,7 +7,6 @@ package com.kusoduck.securities.html.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,11 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kusoduck.stock.constant.StockRatiosColumn;
+import com.kusoduck.securities.entity.StockRatio;
+import com.kusoduck.securities.entity.StockRatioId;
+import com.kusoduck.stock.constant.StockRatiosHeader;
+import com.kusoduck.utils.DateConverter;
+import com.kusoduck.utils.NumberHandleUtils;
 import com.kusoduck.utils.ParseHtmlUtils;
 
 public class StockRatiosParser {
@@ -26,13 +29,9 @@ public class StockRatiosParser {
 
 	private static final String URL = "https://www.twse.com.tw/exchangeReport/BWIBBU_d?response=html&selectType=ALL&date=";
 
-	private StockRatiosParser() {
-
-	}
-
-	public static List<Map<StockRatiosColumn, String>> parse(String date) {
-		String url = URL + date;
-		logger.info(String.format("%s Stock P/E ratio, dividend yield and P/B ratio", date));
+	public static List<StockRatio> parse(String dateString) {
+		String url = URL + dateString;
+		logger.info(String.format("%s Stock P/E ratio, dividend yield and P/B ratio", dateString));
 		logger.info(String.format("Parsing HTML: %s", url));
 		try {
 			/* Need jsoup.jar from http://jsoup.org/ */
@@ -46,50 +45,78 @@ public class StockRatiosParser {
 			Element targetTableElement = tableElements.get(0);
 
 			if (targetTableElement != null) {
-				Map<Integer, StockRatiosColumn> orderColumnMap = new HashMap<>();
-				setOrderColumnMap(orderColumnMap, targetTableElement);
+				Map<Integer, StockRatiosHeader> colNumHeaderMap = getColumnNumberHeaderMap(targetTableElement);
 
-				List<Map<StockRatiosColumn, String>> stockRatioDataList = new ArrayList<>();
-				addStockData2List(stockRatioDataList, orderColumnMap, targetTableElement);
-				return stockRatioDataList;
+				return getStockRatios(dateString, colNumHeaderMap, targetTableElement);
 			}
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
-		return new ArrayList<>();
+		return null;
 	}
 
-	private static void addStockData2List(List<Map<StockRatiosColumn, String>> stockRatioDataList, Map<Integer, StockRatiosColumn> titleOrderMap,
-			Element targetTableElement) {
-
+	private static List<StockRatio> getStockRatios(String dateString,Map<Integer, StockRatiosHeader> colNumHeaderMap, Element targetTableElement) {
+		List<StockRatio> stockRatios = new ArrayList<>();
 		for (Element tbodyElement : targetTableElement.getElementsByTag("tbody")) {
 			for (Element trElement : tbodyElement.getElementsByTag("tr")) {
-				Map<StockRatiosColumn, String> stockRatioDataMap = new EnumMap<>(StockRatiosColumn.class);
 				if (trElement.getElementsByTag("td").size() == 0) {
 					System.out.println(trElement.text());
 				}
+
+				StockRatio entity = new StockRatio();
+				StockRatioId id = new StockRatioId();
+				entity.setId(id);
+				id.setTradeDate(DateConverter.convert(dateString));
 				for (Element tdElement : trElement.getElementsByTag("td")) {
-					StockRatiosColumn stockRatiosColumn = titleOrderMap.get(tdElement.elementSiblingIndex());
-					if (stockRatiosColumn != null) {
-						stockRatioDataMap.put(stockRatiosColumn, tdElement.text());
+					StockRatiosHeader header = colNumHeaderMap.get(tdElement.elementSiblingIndex());
+					String value = tdElement.text();
+					if (header != null) {
+						switch (header) {
+						case DIVIDEND_YEAR:
+							entity.setDividendYear(value);
+							break;
+						case DIVIDEND_YIELD:
+							entity.setDividendYield(NumberHandleUtils.parseBigDecimal(value));
+							break;
+						case FINANCIAL_YEAR_QUARTER:
+							entity.setFinancialYearQuarter(value);
+							break;
+						case PBR:
+							entity.setPbr(NumberHandleUtils.parseBigDecimal(value));
+							break;
+						case PER:
+							entity.setPer(NumberHandleUtils.parseBigDecimal(value));
+							break;
+						case SECURITY_CODE:
+							id.setSecurityCode(value);
+							break;
+						case SECURITY_NAME:
+							entity.setSecurityName(value);
+							break;
+						default:
+							break;
+						}
 					}
 				}
-				stockRatioDataList.add(stockRatioDataMap);
+				stockRatios.add(entity);
 			}
 		}
+		return stockRatios;
 	}
 
-	private static void setOrderColumnMap(Map<Integer, StockRatiosColumn> titleOrderMap, Element targetTableElement) {
+	private static Map<Integer, StockRatiosHeader> getColumnNumberHeaderMap(Element targetTableElement) {
+		Map<Integer, StockRatiosHeader> colNumHeaderMap = new HashMap<>();
 		for (Element theadElement : targetTableElement.getElementsByTag("thead")) {
 			for (Element trElement : theadElement.getElementsByTag("tr")) {
 				for (Element tdElement : trElement.getElementsByTag("th")) {
-					StockRatiosColumn ratiosOfSecuritiesColumn = StockRatiosColumn.getByZhTitle(tdElement.text());
+					StockRatiosHeader ratiosOfSecuritiesColumn = StockRatiosHeader.getByZhTitle(tdElement.text());
 					if (ratiosOfSecuritiesColumn != null) {
-						titleOrderMap.put(tdElement.elementSiblingIndex(), ratiosOfSecuritiesColumn);
+						colNumHeaderMap.put(tdElement.elementSiblingIndex(), ratiosOfSecuritiesColumn);
 					}
 				}
 			}
 		}
+		return colNumHeaderMap;
 	}
 
 }

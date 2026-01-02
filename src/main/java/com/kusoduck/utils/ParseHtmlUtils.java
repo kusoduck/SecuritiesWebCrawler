@@ -15,6 +15,6 @@ public class ParseHtmlUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return Jsoup.connect(url).timeout(10 * 1000).userAgent(ua).maxBodySize(0).get();
+		return Jsoup.connect(url).timeout(30 * 1000).userAgent(ua).maxBodySize(0).get();
 	}
 }

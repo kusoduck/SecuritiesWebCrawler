@@ -7,7 +7,6 @@ package com.kusoduck.securities.html.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,11 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.kusoduck.stock.constant.InvestorsDailyTradingColumn;
+import com.kusoduck.securities.entity.InvestorsDailyTrading;
+import com.kusoduck.securities.entity.InvestorsDailyTradingId;
+import com.kusoduck.stock.constant.InvestorsDailyTradingHeader;
+import com.kusoduck.utils.DateConverter;
+import com.kusoduck.utils.NumberHandleUtils;
 import com.kusoduck.utils.ParseHtmlUtils;
 
 public class InvestorsDailyTradingParser {
@@ -26,14 +29,9 @@ public class InvestorsDailyTradingParser {
 
 	private static final String URL = "https://www.twse.com.tw/rwd/zh/fund/T86?date=#date#&selectType=ALLBUT0999&response=html";
 
-
-	private InvestorsDailyTradingParser() {
-
-	}
-
-	public static List<Map<InvestorsDailyTradingColumn, String>> parse(String date) {
-		String url = URL.replace("#date#", date);
-		logger.info(String.format("%s Daily Trading Details of Foreign and Other Investors", date));
+	public static List<InvestorsDailyTrading> parse(String dateString) {
+		String url = URL.replace("#date#", dateString);
+		logger.info(String.format("%s Daily Trading Details of Foreign and Other Investors", dateString));
 		logger.info(String.format("Parsing HTML: %s", url));
 		try {
 			// Need jsoup.jar from http://jsoup.org/
@@ -41,49 +39,115 @@ public class InvestorsDailyTradingParser {
 			Elements tableElements = doc.getElementsByTag("table");
 			if (tableElements.isEmpty()) {
 				// skip if table is null
-				return new ArrayList<>();
+				return null;
 			}
 			Element targetTableElement = tableElements.get(0);
 
 			if (targetTableElement != null) {
-				Map<Integer, InvestorsDailyTradingColumn> orderColumnMap = new HashMap<>();
-				setOrderColumnMap(orderColumnMap, targetTableElement);
+				Map<Integer, InvestorsDailyTradingHeader> colNumHeaderMap = getColumnNumberHeaderMap(targetTableElement);
 
-				List<Map<InvestorsDailyTradingColumn, String>> investorsDailyTradings = new ArrayList<>();
-				addStockData2List(investorsDailyTradings, orderColumnMap, targetTableElement);
-				return investorsDailyTradings;
+				return getInvestorsDailyTradings(dateString, colNumHeaderMap, targetTableElement);
 			}
 
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
-		return new ArrayList<>();
+		return null;
 	}
 
-	private static void addStockData2List(List<Map<InvestorsDailyTradingColumn, String>> investorsDailyTradings,
-			Map<Integer, InvestorsDailyTradingColumn> orderColumnMap, Element targetTableElement) {
+	private static List<InvestorsDailyTrading> getInvestorsDailyTradings(String dateString, Map<Integer, InvestorsDailyTradingHeader> colNumHeaderMap,
+			Element targetTableElement) {
+		List<InvestorsDailyTrading> investorsDailyTradings = new ArrayList<>();
 		for (Element tbodyElement : targetTableElement.getElementsByTag("tbody")) {
 			for (Element trElement : tbodyElement.getElementsByTag("tr")) {
-				Map<InvestorsDailyTradingColumn, String> investorsDailyTradingDataMap = new EnumMap<>(InvestorsDailyTradingColumn.class);
+				InvestorsDailyTrading entity = new InvestorsDailyTrading();
+				InvestorsDailyTradingId id = new InvestorsDailyTradingId();
+				entity.setId(id);
+				id.setTradeDate(DateConverter.convert(dateString));
 				for (Element tdElement : trElement.getElementsByTag("td")) {
-					investorsDailyTradingDataMap.put(orderColumnMap.get(tdElement.elementSiblingIndex()), tdElement.text());
+					InvestorsDailyTradingHeader header = colNumHeaderMap.get(tdElement.elementSiblingIndex());
+					String value = tdElement.text();
+					switch (header) {
+					case DEALERS_DIFFERENCE:
+						entity.setDealersDifference(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case DEALERS_HEDGE_DIFFERENCE:
+						entity.setDealersHedgeDifference(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case DEALERS_HEDGE_TOTAL_BUY:
+						entity.setDealersHedgeTotalBuy(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case DEALERS_HEDGE_TOTAL_SELL:
+						entity.setDealersHedgeTotalSell(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case DEALERS_PROPRIETARY_DIFFERENCE:
+						entity.setDealersProprietaryDifference(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case DEALERS_PROPRIETARY_TOTAL_BUY:
+						entity.setDealersProprietaryTotalBuy(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case DEALERS_PROPRIETARY_TOTAL_SELL:
+						entity.setDealersProprietaryTotalSell(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case FOREIGN_DEALERS_DIFFERENCE:
+						entity.setForeignDealersDifference(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case FOREIGN_DEALERS_TOTAL_BUY:
+						entity.setForeignDealersTotalBuy(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case FOREIGN_DEALERS_TOTAL_SELL:
+						entity.setForeignDealersTotalSell(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case FOREIGN_INVESTORS_DIFFERENCE:
+						entity.setForeignInvestorsDifference(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case FOREIGN_INVESTORS_TOTAL_BUY:
+						entity.setForeignInvestorsTotalBuy(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case FOREIGN_INVESTORS_TOTAL_SELL:
+						entity.setForeignInvestorsTotalSell(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case SECURITIES_INVESTMENT_TRUST_COMPANIES_TOTAL_BUY:
+						entity.setSecuritiesInvestmentTrustCompaniesTotalBuy(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case SECURITIES_INVESTMENT_TRUST_COMPANIES_TOTAL_DIFFERENCE:
+						entity.setSecuritiesInvestmentTrustCompaniesTotalDifference(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case SECURITIES_INVESTMENT_TRUST_COMPANIES_TOTAL_SELL:
+						entity.setSecuritiesInvestmentTrustCompaniesTotalSell(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					case SECURITY_CODE:
+						id.setSecurityCode(value);
+						break;
+					case SECURITY_NAME:
+						entity.setSecurityName(value);
+						break;
+					case TOTAL_DIFFERENCE:
+						entity.setTotalDifference(NumberHandleUtils.parseBigDecimal(value));
+						break;
+					default:
+						break;
+					}
 				}
-				investorsDailyTradings.add(investorsDailyTradingDataMap);
+				investorsDailyTradings.add(entity);
 			}
 		}
+		return investorsDailyTradings;
 	}
 
-	private static void setOrderColumnMap(Map<Integer, InvestorsDailyTradingColumn> orderColumnMap, Element targetTableElement) {
+	private static Map<Integer, InvestorsDailyTradingHeader> getColumnNumberHeaderMap(Element targetTableElement) {
+		Map<Integer, InvestorsDailyTradingHeader> colNumHeaderMap = new HashMap<>();
 		for (Element theadElement : targetTableElement.getElementsByTag("thead")) {
 			for (Element trElement : theadElement.getElementsByTag("tr")) {
 				for (Element tdElement : trElement.getElementsByTag("th")) {
-					InvestorsDailyTradingColumn investorsDailyTradingColumn = InvestorsDailyTradingColumn.getByZhTitle(tdElement.text());
-					if (investorsDailyTradingColumn != null) {
-						orderColumnMap.put(tdElement.elementSiblingIndex(), investorsDailyTradingColumn);
+					InvestorsDailyTradingHeader header = InvestorsDailyTradingHeader.getByZhTitle(tdElement.text());
+					if (header != null) {
+						colNumHeaderMap.put(tdElement.elementSiblingIndex(), header);
 					}
 				}
 			}
 		}
+		return colNumHeaderMap;
 	}
 
 }

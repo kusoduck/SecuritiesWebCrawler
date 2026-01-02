@@ -13,8 +13,9 @@
 			<outputDirectory></outputDirectory>
 			<lineEnding>dos</lineEnding>
 			<includes>
-				<include>**/*.properties</include>
-				<include>**/log4j2.xml</include>
+				<!-- <include>**/*.properties</include> -->
+				<include>**/logback-spring.xml</include>
+				<include>**/*.yml</include>
 				<include>**/*.bat</include>
 			</includes>
 			<filtered>true</filtered>
@@ -28,7 +29,8 @@
 			<includes>
 				<include>*:*:jar</include>
 			</includes>
-			<outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
+			<outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}${dashClassifier?}.${artifact.extension}
+			</outputFileNameMapping>
 		</dependencySet>
 	</dependencySets>
 </assembly>

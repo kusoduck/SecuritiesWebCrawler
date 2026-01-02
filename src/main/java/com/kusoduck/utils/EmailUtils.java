@@ -1,7 +1,5 @@
 package com.kusoduck.utils;
 
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Properties;
 
 import javax.mail.Message;
@@ -22,21 +20,21 @@ import org.slf4j.LoggerFactory;
 public class EmailUtils {
 	private static Logger logger = LoggerFactory.getLogger(EmailUtils.class);
 
-	private static String propFileName = System.getProperty("prop.mail");
-	private static Properties prop = new Properties();
+//	private static String propFileName = System.getProperty("prop.mail");
+//	private static Properties prop = new Properties();
 
 	private EmailUtils() {
 
 	}
 
-	static {
-		try {
-			FileReader fileReader = new FileReader(propFileName);
-			prop.load(fileReader);
-		} catch (IOException e) {
-			logger.error("Mail property file loading fail", e);
-		}
-	}
+//	static {
+//		try {
+//			FileReader fileReader = new FileReader(propFileName);
+//			prop.load(fileReader);
+//		} catch (IOException e) {
+//			logger.error("Mail property file loading fail", e);
+//		}
+//	}
 
 	public static void sendFromGmail(String account, String password, String from, String to, String subject,String text) {
 		logger.debug("start sendFromGmail");
@@ -72,14 +70,14 @@ public class EmailUtils {
 				// Set To: header field of the header.
 				message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 
-				String cc = prop.getProperty("cc");
-				if (StringUtils.isNotBlank(cc)) {
-					message.addRecipient(Message.RecipientType.CC, new InternetAddress(cc));
-				}
-				String bcc = prop.getProperty("bcc");
-				if (StringUtils.isNotBlank(bcc)) {
-					message.addRecipient(Message.RecipientType.BCC, new InternetAddress(bcc));
-				}
+//				String cc = prop.getProperty("cc");
+//				if (StringUtils.isNotBlank(cc)) {
+//					message.addRecipient(Message.RecipientType.CC, new InternetAddress(cc));
+//				}
+//				String bcc = prop.getProperty("bcc");
+//				if (StringUtils.isNotBlank(bcc)) {
+//					message.addRecipient(Message.RecipientType.BCC, new InternetAddress(bcc));
+//				}
 
 				// Set Subject: header field
 				message.setSubject(subject);

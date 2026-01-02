@@ -8,6 +8,13 @@
 
 	<packaging>jar</packaging>
 
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.5.5</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.release>17</maven.compiler.release>
@@ -32,9 +39,8 @@
 			<plugin>
 				<!--
 				org.apache.maven.plugins:maven-dependency-plugin:3.1.2:build-classpath -->
-				<groupId>org.apache.maven.plugins</groupId> 
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
-				<version>3.1.2</version>
 				<executions>
 					<execution>
 						<id>build-classpath-windows</id>
@@ -56,16 +62,18 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.11.0</version>
 				<configuration>
 					<release>17</release>
+					<debug>true</debug>
+					<compilerArgs>
+						<arg>-g</arg>
+					</compilerArgs>
 				</configuration>
 			</plugin>
 			<!-- 依據descriptor包裝檔案 -->
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId> 
+				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.3.0</version>
 				<executions>
 					<execution>
 						<phase>package</phase>
@@ -88,90 +96,79 @@
 		<!-- Test -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-engine</artifactId>
-			<version>5.9.1</version>
+			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.9.1</version>
-			<scope>test</scope>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		
-		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+		<!-- Using lombok should install https://projectlombok.org/p2 in Eclipse -->
+		<!-- 減少樣板程式碼 -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
-			<version>3.14.0</version>
 		</dependency>
-		<!--
-		https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
-			<version>4.3</version>
+			<version>4.5.0</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/commons-dbutils/commons-dbutils -->
 		<!-- QueryRunner -->
 		<dependency>
 			<groupId>commons-dbutils</groupId>
 			<artifactId>commons-dbutils</artifactId>
-			<version>1.7</version>
+			<version>1.8.1</version>
+		</dependency>
+
+		<!-- Json tool-->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
 		</dependency>
 
 		<!-- log4j 2 -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j2.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j2.version}</version>
-		</dependency>
+		<!--		<dependency>-->
+		<!--			<groupId>org.apache.logging.log4j</groupId>-->
+		<!--			<artifactId>log4j-api</artifactId>-->
+		<!--			<version>${log4j2.version}</version>-->
+		<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.apache.logging.log4j</groupId>-->
+		<!--			<artifactId>log4j-core</artifactId>-->
+		<!--			<version>${log4j2.version}</version>-->
+		<!--		</dependency>-->
 		<!-- SLF4J Simple Binding -->
-		<!--
-		https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>${log4j2.version}</version>
-		</dependency>
+		<!--		<dependency>-->
+		<!--			<groupId>org.apache.logging.log4j</groupId>-->
+		<!--			<artifactId>log4j-slf4j-impl</artifactId>-->
+		<!--			<version>${log4j2.version}</version>-->
+		<!--		</dependency>-->
 		<!-- SLF4J API Module -->
-		<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.36</version>
-		</dependency>
+		<!--		<dependency>-->
+		<!--			<groupId>org.slf4j</groupId>-->
+		<!--			<artifactId>slf4j-api</artifactId>-->
+		<!--			<version>1.7.36</version>-->
+		<!--		</dependency>-->
 
-		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
+		<!-- JSOUP -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
-			<version>1.15.3</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.28</version>
+			<version>1.21.1</version>
 		</dependency>
 
-		<!-- Selenium Java 支援 -->
+		<!-- MySQL -->
 		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-java</artifactId>
-			<version>4.20.0</version> <!-- 目前最新版，保證最穩 -->
-		</dependency>
-
-		<!-- WebDriver Manager：自動管理瀏覽器Driver超方便 -->
-		<dependency>
-			<groupId>io.github.bonigarcia</groupId>
-			<artifactId>webdrivermanager</artifactId>
-			<version>5.8.0</version>
+			<groupId>com.mysql</groupId>
+			<artifactId>mysql-connector-j</artifactId>
 		</dependency>
 
 		<!-- Mail -->
