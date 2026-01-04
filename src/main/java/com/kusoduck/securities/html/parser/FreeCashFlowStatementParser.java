@@ -11,7 +11,7 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import com.kusoduck.securities.entity.FreeCashFlowStatement;
-import com.kusoduck.securities.entity.id.FreeCashFlowStatementId;
+import com.kusoduck.securities.entity.id.StockReportId;
 import com.kusoduck.stock.constant.FreeCashFlowStatementHeader;
 import com.kusoduck.utils.NumberHandleUtils;
 import com.kusoduck.utils.ParseHtmlUtils;
@@ -48,7 +48,7 @@ public class FreeCashFlowStatementParser extends HtmlParser<FreeCashFlowStatemen
 	@Override
 	protected FreeCashFlowStatement createEntity(Object... context) {
 		FreeCashFlowStatement entity = new FreeCashFlowStatement();
-		FreeCashFlowStatementId id = new FreeCashFlowStatementId();
+		StockReportId id = new StockReportId();
 
 		// 從 context 中解構出年份與季度 (假設傳入順序為 Year, Quarter)
 		if (context != null && context.length >= 2) {

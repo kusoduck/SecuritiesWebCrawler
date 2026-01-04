@@ -1,6 +1,6 @@
 package com.kusoduck.securities.entity;
 
-import com.kusoduck.securities.entity.id.FreeCashFlowStatementId;
+import com.kusoduck.securities.entity.id.StockReportId;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
@@ -23,7 +23,7 @@ import lombok.Setter;
 public class FreeCashFlowStatement {
     // 嵌入複合主鍵
     @EmbeddedId
-    private FreeCashFlowStatementId id;
+    private StockReportId id;
 
     @Column(name = "operating_cash_flow")
     private Long operatingCashFlow; // 對應 BIGINT

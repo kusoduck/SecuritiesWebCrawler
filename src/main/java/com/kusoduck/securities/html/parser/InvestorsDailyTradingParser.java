@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kusoduck.securities.entity.InvestorsDailyTrading;
-import com.kusoduck.securities.entity.InvestorsDailyTradingId;
+import com.kusoduck.securities.entity.id.StockTradeId;
 import com.kusoduck.stock.constant.InvestorsDailyTradingHeader;
 import com.kusoduck.utils.DateConverter;
 import com.kusoduck.utils.NumberHandleUtils;
@@ -61,7 +61,7 @@ public class InvestorsDailyTradingParser {
 		for (Element tbodyElement : targetTableElement.getElementsByTag("tbody")) {
 			for (Element trElement : tbodyElement.getElementsByTag("tr")) {
 				InvestorsDailyTrading entity = new InvestorsDailyTrading();
-				InvestorsDailyTradingId id = new InvestorsDailyTradingId();
+				StockTradeId id = new StockTradeId();
 				entity.setId(id);
 				id.setTradeDate(DateConverter.convert(dateString));
 				for (Element tdElement : trElement.getElementsByTag("td")) {
@@ -117,10 +117,7 @@ public class InvestorsDailyTradingParser {
 						entity.setSecuritiesInvestmentTrustCompaniesTotalSell(NumberHandleUtils.parseBigDecimal(value));
 						break;
 					case SECURITY_CODE:
-						id.setSecurityCode(value);
-						break;
-					case SECURITY_NAME:
-						entity.setSecurityName(value);
+						id.setStockCode(value);
 						break;
 					case TOTAL_DIFFERENCE:
 						entity.setTotalDifference(NumberHandleUtils.parseBigDecimal(value));

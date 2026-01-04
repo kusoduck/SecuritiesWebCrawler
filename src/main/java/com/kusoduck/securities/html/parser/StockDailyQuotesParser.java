@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kusoduck.securities.entity.StockDailyQuote;
-import com.kusoduck.securities.entity.StockDailyQuoteId;
+import com.kusoduck.securities.entity.id.StockTradeId;
 import com.kusoduck.stock.constant.StockDailyQuotesHeader;
 import com.kusoduck.utils.DateConverter;
 import com.kusoduck.utils.NumberHandleUtils;
@@ -76,7 +76,7 @@ public class StockDailyQuotesParser {
 		for (Element tbodyElement : targetTableElement.getElementsByTag("tbody")) {
 			for (Element trElement : tbodyElement.getElementsByTag("tr")) {
 				StockDailyQuote entity = new StockDailyQuote();
-				StockDailyQuoteId id = new StockDailyQuoteId();
+				StockTradeId id = new StockTradeId();
 				entity.setId(id);
 				id.setTradeDate(DateConverter.convert(dateString));
 				for (Element tdElement : trElement.getElementsByTag("td")) {
@@ -84,7 +84,7 @@ public class StockDailyQuotesParser {
 					String value = tdElement.text();
 					switch (header) {
 					case CHANGE:
-						entity.setPriceChange(NumberHandleUtils.parseBigDecimal(value));
+						entity.setPriceDiff(NumberHandleUtils.parseBigDecimal(value));
 						break;
 					case CLOSING_PRICE:
 						entity.setClosingPrice(NumberHandleUtils.parseBigDecimal(value));
@@ -117,7 +117,7 @@ public class StockDailyQuotesParser {
 						entity.setPriceEarningRatio(NumberHandleUtils.parseBigDecimal(value));
 						break;
 					case SECURITY_CODE:
-						id.setSecurityCode(value);
+						id.setStockCode(value);
 						break;
 					case SECURITY_NAME:
 						entity.setSecurityName(value);

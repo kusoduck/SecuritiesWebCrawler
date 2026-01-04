@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.kusoduck.securities.entity.IndiceDailyQuote;
-import com.kusoduck.securities.entity.IndiceDailyQuoteId;
+import com.kusoduck.securities.entity.id.IndiceDailyQuoteId;
 
 @Repository
 public interface IndiceDailyQuotesRepository extends JpaRepository<IndiceDailyQuote, IndiceDailyQuoteId> {

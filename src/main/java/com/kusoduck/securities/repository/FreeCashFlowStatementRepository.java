@@ -6,14 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.kusoduck.securities.entity.FreeCashFlowStatement;
-import com.kusoduck.securities.entity.id.FreeCashFlowStatementId;
+import com.kusoduck.securities.entity.id.StockReportId;
 
 /**
  * t_free_cash_flow_statement 的 Spring Data JPA Repository
  */
 @Repository
 public interface FreeCashFlowStatementRepository
-    extends JpaRepository<FreeCashFlowStatement, FreeCashFlowStatementId> {
+    extends JpaRepository<FreeCashFlowStatement, StockReportId> {
 
     // Spring Data JPA 會自動提供基本的 CRUD (Create, Read, Update, Delete) 方法。
 

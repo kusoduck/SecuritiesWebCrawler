@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kusoduck.securities.entity.StockRatio;
-import com.kusoduck.securities.entity.StockRatioId;
+import com.kusoduck.securities.entity.id.StockTradeId;
 import com.kusoduck.stock.constant.StockRatiosHeader;
 import com.kusoduck.utils.DateConverter;
 import com.kusoduck.utils.NumberHandleUtils;
@@ -64,7 +64,7 @@ public class StockRatiosParser {
 				}
 
 				StockRatio entity = new StockRatio();
-				StockRatioId id = new StockRatioId();
+				StockTradeId id = new StockTradeId();
 				entity.setId(id);
 				id.setTradeDate(DateConverter.convert(dateString));
 				for (Element tdElement : trElement.getElementsByTag("td")) {
@@ -88,7 +88,7 @@ public class StockRatiosParser {
 							entity.setPer(NumberHandleUtils.parseBigDecimal(value));
 							break;
 						case SECURITY_CODE:
-							id.setSecurityCode(value);
+							id.setStockCode(value);
 							break;
 						case SECURITY_NAME:
 							entity.setSecurityName(value);

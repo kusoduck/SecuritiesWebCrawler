@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.kusoduck.securities.entity.CumulativeEpsData;
 import com.kusoduck.securities.entity.QuarterlyEpsData;
-import com.kusoduck.securities.entity.QuarterlyEpsDataId;
+import com.kusoduck.securities.entity.id.QuarterlyEpsDataId;
 import com.kusoduck.securities.html.MopsRedirector;
 import com.kusoduck.securities.html.parser.EpsParser;
 import com.kusoduck.utils.CalcuateQuarterUtils;
@@ -53,12 +53,12 @@ public class EpsService {
 			for (CumulativeEpsData cumulativeEps : notExistCumulativeEpsDataList) {
 				// 取得上一季的前一季，用來計算季與季的差額
 				Pair<Integer, Integer> lastYearQuarterPair = CalcuateQuarterUtils.calcPreviousQuarter(year, quarter);
-				String stockSymbol = cumulativeEps.getId().getSecurityCode();
-				CumulativeEpsData lastCumulativeEpsData = cumulativeEpsService.getCumulativeEpsDataBySecurityCodeAndYearAndSeason(stockSymbol,
+				String stockCode = cumulativeEps.getId().getStockCode();
+				CumulativeEpsData lastCumulativeEpsData = cumulativeEpsService.getCumulativeEpsDataBySecurityCodeAndYearAndSeason(stockCode,
 						lastYearQuarterPair.getLeft(), lastYearQuarterPair.getRight());
 				if (lastCumulativeEpsData != null) {
 					BigDecimal quarterlyEps = cumulativeEps.getEps().subtract(lastCumulativeEpsData.getEps());
-					QuarterlyEpsDataId quarterlyEpsDataId = new QuarterlyEpsDataId(stockSymbol, year, quarter);
+					QuarterlyEpsDataId quarterlyEpsDataId = new QuarterlyEpsDataId(stockCode, year, quarter);
 					QuarterlyEpsData quarterlyEpsData = new QuarterlyEpsData(quarterlyEpsDataId, quarterlyEps);
 					quarterlyEpsDataService.save(quarterlyEpsData);
 				}

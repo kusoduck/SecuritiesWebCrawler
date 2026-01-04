@@ -2,10 +2,17 @@ package com.kusoduck.securities.entity;
 
 import java.math.BigDecimal;
 
+import com.kusoduck.securities.entity.id.StockTradeId;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * JPA Entity 類別，對應 `t_stock_ratio` 資料表。
@@ -13,10 +20,14 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "t_stock_ratio")
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class StockRatio {
 
     @EmbeddedId
-    private StockRatioId id;
+    private StockTradeId id;
 
     @Column(name = "SECURITY_NAME", length = 45)
     private String securityName;
@@ -36,59 +47,4 @@ public class StockRatio {
     @Column(name = "FINANCIAL_YEAR_QUARTER", length = 6)
     private String financialYearQuarter;
 
-    public StockRatioId getId() {
-        return id;
-    }
-
-    public void setId(StockRatioId id) {
-        this.id = id;
-    }
-
-    public String getSecurityName() {
-        return securityName;
-    }
-
-    public void setSecurityName(String securityName) {
-        this.securityName = securityName;
-    }
-
-    public BigDecimal getDividendYield() {
-        return dividendYield;
-    }
-
-    public void setDividendYield(BigDecimal dividendYield) {
-        this.dividendYield = dividendYield;
-    }
-
-    public String getDividendYear() {
-        return dividendYear;
-    }
-
-    public void setDividendYear(String dividendYear) {
-        this.dividendYear = dividendYear;
-    }
-
-    public BigDecimal getPer() {
-        return per;
-    }
-
-    public void setPer(BigDecimal per) {
-        this.per = per;
-    }
-
-    public BigDecimal getPbr() {
-        return pbr;
-    }
-
-    public void setPbr(BigDecimal pbr) {
-        this.pbr = pbr;
-    }
-
-    public String getFinancialYearQuarter() {
-        return financialYearQuarter;
-    }
-
-    public void setFinancialYearQuarter(String financialYearQuarter) {
-        this.financialYearQuarter = financialYearQuarter;
-    }
 }

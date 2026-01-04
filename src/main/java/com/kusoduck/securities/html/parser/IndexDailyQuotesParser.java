@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kusoduck.securities.entity.IndiceDailyQuote;
-import com.kusoduck.securities.entity.IndiceDailyQuoteId;
+import com.kusoduck.securities.entity.id.IndiceDailyQuoteId;
 import com.kusoduck.stock.constant.IndexDailyQuotesHeader;
 import com.kusoduck.utils.DateConverter;
 import com.kusoduck.utils.NumberHandleUtils;
@@ -61,13 +61,13 @@ public class IndexDailyQuotesParser {
 				int colNum = 0;
 				IndiceDailyQuote entity = new IndiceDailyQuote();
 				IndiceDailyQuoteId id = new IndiceDailyQuoteId();
-				id.setDate(DateConverter.convert(date));
+				id.setTradeDate(DateConverter.convert(date));
 				for (Element tdElement : trElement.getElementsByTag("td")) {
 					IndexDailyQuotesHeader header = colNumHeaderMap.get(colNum++);
 					String value = tdElement.text();
 					switch (header) {
 					case CHANGE:
-						entity.setIndexChange(NumberHandleUtils.parseBigDecimal(value));
+						entity.setIndexDiff(NumberHandleUtils.parseBigDecimal(value));
 						break;
 					case CHANGE_PERCENT:
 						entity.setChangePercent(NumberHandleUtils.parseBigDecimal(value));

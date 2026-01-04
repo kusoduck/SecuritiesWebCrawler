@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.kusoduck.securities.entity.CumulativeEpsData;
-import com.kusoduck.securities.entity.CumulativeEpsDataId;
+import com.kusoduck.securities.entity.id.StockReportId;
 import com.kusoduck.utils.NumberHandleUtils;
 import com.kusoduck.utils.ParseHtmlUtils;
 
@@ -41,31 +41,22 @@ public class EpsParser {
 		return totalCumulativeEpsDataList;
 	}
 
-	private List<CumulativeEpsData> getCumulativeEpsList(Map<Integer, String> columnIndexTitleMap, Elements trElements, int year, int season) {
+	private List<CumulativeEpsData> getCumulativeEpsList(Map<Integer, String> columnIndexTitleMap, Elements trElements, int year, int reportQuarter) {
 		List<CumulativeEpsData> cumulativeEpsList = new ArrayList<>();
 		for (Element trElement : trElements) {
 			Elements tdElements = trElement.select("td");
 			int i = 0;
 			CumulativeEpsData entity = new CumulativeEpsData();
-			CumulativeEpsDataId id = new CumulativeEpsDataId();
+			StockReportId id = new StockReportId();
 			entity.setId(id);
-			id.setYear(year + 1911);
-			id.setSeason(season);
+			id.setReportYear(Integer.valueOf(year + 1911).shortValue());
+			id.setReportQuarter(Integer.valueOf(reportQuarter).byteValue());
 			for (Element tdElement : tdElements) {
 				String value = tdElement.text();
 				switch (columnIndexTitleMap.get(i++)) {
 				case "公司 代號":
-					id.setSecurityCode(value);
+					id.setStockCode(value);
 					break;
-				// case "收益":
-				// case "營業收入":
-				// epsPO.setOperatingIncome(new BigDecimal(data.text()));
-				// break;
-				// case "營業利益（損失）":
-				// case "營業利益":
-				// case "繼續營業單位稅前淨利（淨損）":
-				// epsPO.setOperatingProfitLoss(new BigDecimal(data.text()));
-				// break;
 				case "基本每股盈餘（元）":
 					entity.setEps(NumberHandleUtils.parseBigDecimal(value));
 					break;
