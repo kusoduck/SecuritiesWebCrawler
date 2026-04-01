@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.kusoduck.securities.entity.CumulativeEpsData;
 import com.kusoduck.securities.entity.QuarterlyEpsData;
-import com.kusoduck.securities.entity.id.QuarterlyEpsDataId;
+import com.kusoduck.securities.entity.id.StockReportId;
 import com.kusoduck.securities.html.MopsRedirector;
 import com.kusoduck.securities.html.parser.EpsParser;
 import com.kusoduck.utils.CalcuateQuarterUtils;
@@ -36,8 +36,8 @@ public class EpsService {
 	public void crawlData(LocalDate current) throws SQLException {
 		Pair<Integer, Integer> previousRocYearQuarter = CalcuateQuarterUtils.calcPreviousYearQuarter(current);
 
-		int year = previousRocYearQuarter.getLeft();
-		int quarter = previousRocYearQuarter.getRight();
+		Short year = previousRocYearQuarter.getLeft().shortValue();
+		Byte quarter = previousRocYearQuarter.getRight().byteValue();
 		int rocYear = CalcuateQuarterUtils.toRocYear(year);
 
 		String url = mopsRedirector.getRedirectUrl(apiName, rocYear, quarter);
@@ -58,14 +58,14 @@ public class EpsService {
 						lastYearQuarterPair.getLeft(), lastYearQuarterPair.getRight());
 				if (lastCumulativeEpsData != null) {
 					BigDecimal quarterlyEps = cumulativeEps.getEps().subtract(lastCumulativeEpsData.getEps());
-					QuarterlyEpsDataId quarterlyEpsDataId = new QuarterlyEpsDataId(stockCode, year, quarter);
+					StockReportId quarterlyEpsDataId = new StockReportId(stockCode, year, quarter);
 					QuarterlyEpsData quarterlyEpsData = new QuarterlyEpsData(quarterlyEpsDataId, quarterlyEps);
 					quarterlyEpsDataService.save(quarterlyEpsData);
 				}
 			}
 		}else {
 			for (CumulativeEpsData cumulativeEps : notExistCumulativeEpsDataList) {
-					QuarterlyEpsDataId quarterlyEpsDataId = new QuarterlyEpsDataId(cumulativeEps.getId().getSecurityCode(), year, quarter);
+				StockReportId quarterlyEpsDataId = new StockReportId(cumulativeEps.getId().getStockCode(), year, quarter);
 					QuarterlyEpsData quarterlyEpsData = new QuarterlyEpsData(quarterlyEpsDataId, cumulativeEps.getEps());
 					quarterlyEpsDataService.save(quarterlyEpsData);
 			}

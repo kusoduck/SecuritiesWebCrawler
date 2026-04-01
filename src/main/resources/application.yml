@@ -34,9 +34,10 @@ app:
 #    root: INFO
 
 crawl:
-  from:
-    today: false
-    date: 20200101
+  today: true
+  date:
+    from:  20260303
+    to: 20260303
   
 email:
   from: i.xuan1128@gmail.com

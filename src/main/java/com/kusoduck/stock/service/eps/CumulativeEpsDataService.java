@@ -20,12 +20,12 @@ public class CumulativeEpsDataService {
 		repository = theRepository;
 	}
 
-	public CumulativeEpsData getCumulativeEpsDataBySecurityCodeAndYearAndSeason(String securityCode, int year, int season) {
-		return repository.findByIdSecurityCodeAndIdYearAndIdSeason(securityCode, year, season);
+	public CumulativeEpsData getCumulativeEpsDataBySecurityCodeAndYearAndSeason(String stockCode, int year, int season) {
+		return repository.findByIdStockCodeAndIdReportYearAndIdReportQuarter(stockCode, year, season);
 	}
 
     public Optional<List<CumulativeEpsData>> getCumulativeEpsDataByYearAndSeason(int year, int season) {
-        return repository.findByIdYearAndIdSeason(year, season);
+        return repository.findByIdReportYearAndIdReportQuarter(year, season);
     }
 
     @Transactional

@@ -44,7 +44,7 @@ public class StockDailyQuotesParser {
 
 			Elements tableElements = doc.getElementsByTag("table");
 			// 因為有多個表，所以要找出需要的表
-			Element targetTableElement = findTargetTableElement(tableElements, "全部(不含權證、牛熊證)");
+			Element targetTableElement = findTargetTableElement(tableElements, "全部(不含權證");
 
 			if (targetTableElement != null) {
 				Map<Integer, StockDailyQuotesHeader> colNumHeaderMap = getColumnNumberHeaderMap(targetTableElement);

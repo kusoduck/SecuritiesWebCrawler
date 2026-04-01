@@ -12,7 +12,7 @@ import com.kusoduck.securities.entity.id.StockReportId;
 @Repository
 public interface CumulativeEpsDataRepository extends JpaRepository<CumulativeEpsData, StockReportId>{
 
-	Optional<List<CumulativeEpsData>> findByIdYearAndIdSeason(int year,int season);
+	Optional<List<CumulativeEpsData>> findByIdReportYearAndIdReportQuarter(int reportYear,int reportQuarter);
 
-	CumulativeEpsData findByIdSecurityCodeAndIdYearAndIdSeason(String securityCode, int year, int season);
+	CumulativeEpsData findByIdStockCodeAndIdReportYearAndIdReportQuarter(String stockCode, int reportYear, int reportQuarter);
 }

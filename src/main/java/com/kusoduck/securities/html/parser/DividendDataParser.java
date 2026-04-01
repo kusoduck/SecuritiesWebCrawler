@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.kusoduck.securities.entity.DividendData;
+import com.kusoduck.securities.entity.id.DividendDataId;
 import com.kusoduck.utils.NumberHandleUtils;
 import com.kusoduck.utils.ParseHtmlUtils;
 
@@ -53,15 +54,17 @@ public class DividendDataParser {
 						Elements tdElements = trElement.getElementsByTag("td");
 						int colNum = 0;
 						DividendData dividendDataPO =  new DividendData();
+						DividendDataId id = new DividendDataId();
+						dividendDataPO.setId(id);
 						for (Element tdElement : tdElements) {
 							String header = colNumHeaderMap.get(colNum++);
 							String value = tdElement.text();
 							switch (header) {
 							case "資料日期":
-								dividendDataPO.setExDividendDate(convertROCDate(value));
+								id.setExDividendDate(convertROCDate(value));
 								break;
 							case "股票代號":
-								dividendDataPO.setStockCode(value);
+								id.setStockCode(value);
 								break;
 							case "除權息前收盤價":
 								dividendDataPO.setClosingPriceBefore(NumberHandleUtils.parseBigDecimal(value));

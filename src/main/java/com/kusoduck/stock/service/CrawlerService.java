@@ -27,8 +27,6 @@ public class CrawlerService {
 	@Autowired
 	private TradeDateService tradeDateService;
 	@Autowired
-	private IndiceDailyQuotesService indiceDailyQuotesService;
-	@Autowired
 	private StockDailyQuotesService stockDailyQuotesService;
 	@Autowired
 	private StockRatioService stockRatioService;
@@ -43,10 +41,12 @@ public class CrawlerService {
 	@Autowired
 	private FreeCashFlowCrawlService freeCashFlowCrawlService;
 
-	@Value("${crawl.from.today}")
+	@Value("${crawl.today}")
 	private boolean isFromToday;
-	@Value("${crawl.from.date}")
-	private String crawlFromDate;
+	@Value("${crawl.date.from}")
+	private String fromDate;
+	@Value("${crawl.date.to}")
+	private String toDate;
 
 	@Value("${email.to}")
 	private String emailTo;
@@ -55,20 +55,22 @@ public class CrawlerService {
 
 	public void start() throws IOException {
 
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 		try {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd");
 			if (isFromToday) {
+
 				crawlData(LocalDate.now(), formatter);
+
 			} else {
 				// 1. 將字串轉換為 LocalDate 起始日期
-				LocalDate startDate = LocalDate.parse(crawlFromDate, formatter);
-				LocalDate today = LocalDate.now();
+				LocalDate startDate = LocalDate.parse(fromDate, formatter);
+				LocalDate endDate = LocalDate.parse(toDate, formatter);
 
 				// 2. 使用 loop 遍歷日期（直到今天為止）
 				LocalDate current = startDate;
 
 				// .isAfter(today) 判定是否超過今天
-				while (!current.isAfter(today)) {
+				while (!current.isAfter(endDate)) {
 
 					crawlData(current, formatter);
 
@@ -76,7 +78,7 @@ public class CrawlerService {
 					current = current.plusDays(1);
 
 					// 4. 間隔延遲
-					if (!current.isAfter(today)) { // 如果還有下一輪才睡，最後一天爬完不用睡
+					if (!current.isAfter(endDate)) { // 如果還有下一輪才睡，最後一天爬完不用睡
 						try {
 							Thread.sleep(10000);
 						} catch (InterruptedException ex) {
@@ -85,32 +87,31 @@ public class CrawlerService {
 					}
 				}
 			}
-		} catch (Exception e) {
+		} catch (IOException | SQLException | DateMismatchException | DataNotExistException e) {
 			logger.error(e.getMessage());
-
 			/* Send Mail */
 			Account account = accountService.findById("Gmail App").get();
-
-			EmailUtils.sendFromGmail(account.getAccount(), EncryptUtils.decrypt(account.getPassword()), emailFrom, emailTo, "Stock crawler fail",
-					e.getMessage());
+			EmailUtils.sendFromGmail(account.getAccount(), EncryptUtils.decrypt(account.getPassword()), emailFrom,
+					emailTo, "Stock crawler fail", e.getMessage());
 		}
+
 	}
 
 	private void crawlData(LocalDate current, DateTimeFormatter formatter)
 			throws IOException, SQLException, DateMismatchException, DataNotExistException {
 		String currentString = current.format(formatter);
 
-		indiceDailyQuotesService.crawlData(currentString);
 		stockDailyQuotesService.crawlData(currentString);
 		stockRatioService.crawlData(currentString);
+		dividendDataService.processDividendData(currentString);
 		investorsDailyTradingService.crawlData(currentString);
 
 		ckeckData(currentString);
 
-		epsService.crawlData(current);
-		freeCashFlowCrawlService.crawl(current);
-
-		dividendDataService.processDividendData(currentString);
+		if (current.getDayOfMonth() == 1) {
+			epsService.crawlData(current);
+			freeCashFlowCrawlService.crawl(current);
+		}
 	}
 
 	private void ckeckData(String dateString) throws SQLException, DateMismatchException, DataNotExistException {
@@ -126,7 +127,8 @@ public class CrawlerService {
 			throw new DateMismatchException("stock ratio date not mapping trade_date");
 		}
 
-		if (!tradeDate.isEqual(investorsDailyTradingService.findFirstByOrderByTradeDateDesc().get().getId().getTradeDate())) {
+		if (!tradeDate
+				.isEqual(investorsDailyTradingService.findFirstByOrderByTradeDateDesc().get().getId().getTradeDate())) {
 			throw new DateMismatchException("investors trade date not mapping trade_date");
 		}
 	}
